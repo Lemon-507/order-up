@@ -59,3 +59,17 @@
 
     # Windows
     .\mvnw.cmd clean javafx:run
+
+---
+
+## 🎮 游戏操作说明 (Controls)
+* 动作	玩家 1 (Player 1)	玩家 2 (Player 2)
+* 移动	W A S D	↑ ↓ ← →
+* 互动 / 抓取	J	Num 1
+* 切菜 / 烹饪	K	Num 2
+* 冲刺	LShift	RShift
+
+---
+
+## 📄 开源协议 (License)
+本项目基于 MIT License 协议开源。
