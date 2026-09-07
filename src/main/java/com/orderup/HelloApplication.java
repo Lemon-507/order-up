@@ -1,4 +1,4 @@
-package com.orderup.orderup;
+package com.orderup;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

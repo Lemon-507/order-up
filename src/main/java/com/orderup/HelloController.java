@@ -1,4 +1,4 @@
-package com.orderup.orderup;
+package com.orderup;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

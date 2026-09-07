@@ -3,6 +3,6 @@ module com.orderup.orderup {
     requires javafx.fxml;
 
 
-    opens com.orderup.orderup to javafx.fxml;
-    exports com.orderup.orderup;
+    opens com.orderup to javafx.fxml;
+    exports com.orderup;
 }
