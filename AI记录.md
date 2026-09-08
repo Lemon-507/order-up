@@ -220,3 +220,41 @@ readme模版
 - 复杂动画系统
 
 我建议你们把项目定位成：**“JavaFX 2D 小吃摊限时出餐游戏，重点展示面向对象建模、事件交互、订单状态管理和团队协作。”** 这个定位既贴合 README，也比较适合 10 天实训，最后容易演示出效果。
+
+---
+## b1ush7:
+你有什么背景音乐的推荐吗
+## gpt5.5:
+有，建议你们选 **轻快、循环感强、不要太抢戏** 的 BGM，风格往“小吃摊 + 限时出餐 + 有点忙乱但可爱”靠。
+
+我推荐这几类：
+
+1. **主菜单**
+   - 风格：轻松、温暖、带一点市集感
+   - 关键词：`cozy cooking game`、`casual restaurant`、`ukulele cafe`、`happy kitchen`
+
+2. **游戏中**
+   - 风格：节奏稍快、循环播放不烦
+   - 关键词：`upbeat cooking game loop`、`fast casual game music`、`cartoon kitchen`、`time management game`
+
+3. **倒计时/紧张阶段**
+   - 风格：鼓点更明显，别太吵
+   - 关键词：`countdown game music`、`tension loop`、`comedy chase music`
+
+4. **结算界面**
+   - 风格：短、明亮、有奖励感
+   - 关键词：`success jingle`、`level complete`、`game result music`
+
+**素材网站推荐：**
+
+- [Pixabay Music](https://pixabay.com/music/)：最适合实训项目，下载方便，官方说明可免费用于项目，署名不是强制但建议写进 README。
+- [OpenGameArt](https://opengameart.org/)：更偏游戏素材，但要认真看每个音乐的 license，有些需要署名。
+- [itch.io free game assets](https://itch.io/game-assets/free/tag-music)：游戏感强，适合找 loop BGM，但也要看作者授权说明。
+
+我个人建议你们直接用 **Pixabay**，最省事。README 里加一句类似：
+
+```md
+音乐素材来源：Pixabay Music，依据 Pixabay Content License 使用。
+```
+
+具体风格上，游戏主 BGM 可以找 **轻快爵士 / chiptune / ukulele / bossa nova**。不要用太史诗、太电子、太燃的音乐，不然“小吃摊出餐”会变成“世界末日炒饭”。
