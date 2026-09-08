@@ -14,6 +14,7 @@ public class StartController {
     @FXML
     private void onSettingsButtonClick(ActionEvent event) {
         // TODO: Open the options screen here. This action intentionally has no side effects yet.
+
     }
 
     @FXML
