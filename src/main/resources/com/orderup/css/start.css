@@ -1,0 +1,99 @@
+.root {
+    -fx-font-family: "Arial";
+}
+
+.menu-background {
+    -fx-background-color:
+        radial-gradient(center 50% 44%, radius 58%, rgba(45, 76, 75, 0.92), rgba(16, 24, 29, 0.98)),
+        linear-gradient(to bottom right, #213837, #111820 68%, #18151a);
+}
+
+.menu-layout {
+    -fx-background-color: transparent;
+}
+
+.top-accent {
+    -fx-background-color: linear-gradient(to right, #f4c95d, #ef8354 55%, #d94f4f);
+}
+
+.brand-mark {
+    -fx-text-fill: #f4c95d;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.screen-label,
+.footer-text {
+    -fx-text-fill: #8da09e;
+    -fx-font-size: 12px;
+}
+
+.game-title {
+    -fx-text-fill: #fff7df;
+    -fx-font-size: 64px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.48), 18, 0.2, 0, 6);
+}
+
+.game-subtitle {
+    -fx-text-fill: #ef8354;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.menu-button {
+    -fx-pref-width: 340px;
+    -fx-pref-height: 60px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-border-width: 2px;
+    -fx-cursor: hand;
+    -fx-font-size: 19px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 24px;
+}
+
+.primary-button {
+    -fx-background-color: #f4c95d;
+    -fx-border-color: #f4c95d;
+    -fx-text-fill: #151b1f;
+    -fx-effect: dropshadow(gaussian, rgba(244, 201, 93, 0.24), 16, 0.18, 0, 4);
+}
+
+.primary-button:hover {
+    -fx-background-color: #ffdd7d;
+    -fx-border-color: #ffdd7d;
+}
+
+.secondary-button,
+.quit-button {
+    -fx-background-color: rgba(11, 17, 21, 0.72);
+    -fx-border-color: #667977;
+    -fx-text-fill: #e8eeeb;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #e8eeeb;
+    -fx-border-color: #e8eeeb;
+    -fx-text-fill: #172124;
+}
+
+.quit-button:hover {
+    -fx-background-color: #d94f4f;
+    -fx-border-color: #e96a62;
+    -fx-text-fill: #ffffff;
+}
+
+.menu-button:pressed {
+    -fx-translate-y: 2px;
+    -fx-effect: none;
+}
+
+.menu-button:focused {
+    -fx-border-color: #fff7df;
+    -fx-border-width: 3px;
+}
+
+.footer-text {
+    -fx-text-fill: #61726f;
+}

@@ -4,11 +4,49 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.orderup.controller.StartController">
-    <padding>
-        <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
-    </padding>
-   <Button onAction="#onStartButtonClick" text="开始游戏" />
-   <Button onAction="#onSettingsButtonClick" text="选项" />
-    <Button onAction="#onQuitButtonClick" text="退出" />
-</VBox>
+<StackPane prefHeight="720.0" prefWidth="1280.0" stylesheets="@../css/start.css"
+           xmlns="http://javafx.com/javafx/17.0.10" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.orderup.controller.StartController">
+    <Region styleClass="menu-background" />
+    <Region maxHeight="5.0" StackPane.alignment="TOP_CENTER" styleClass="top-accent" />
+
+    <BorderPane maxHeight="720.0" maxWidth="1280.0" styleClass="menu-layout">
+        <top>
+            <HBox alignment="CENTER_LEFT" BorderPane.alignment="CENTER">
+                <Label styleClass="brand-mark" text="ORDER UP!" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Label styleClass="screen-label" text="MAIN MENU" />
+                <padding>
+                    <Insets bottom="24.0" left="44.0" right="44.0" top="30.0" />
+                </padding>
+            </HBox>
+        </top>
+
+        <center>
+            <VBox alignment="CENTER" maxWidth="460.0" spacing="12.0" BorderPane.alignment="CENTER">
+                <Label styleClass="game-title" text="ORDER UP!" />
+                <Label styleClass="game-subtitle" text="THE DINNER RUSH AWAITS" />
+                <Region prefHeight="26.0" />
+
+                <Button defaultButton="true" maxWidth="340.0" minHeight="60.0"
+                        onAction="#onStartButtonClick" styleClass="menu-button, primary-button"
+                        text="开始游戏" />
+                <Button maxWidth="340.0" minHeight="60.0"
+                        onAction="#onSettingsButtonClick" styleClass="menu-button, secondary-button"
+                        text="选项" />
+                <Button cancelButton="true" maxWidth="340.0" minHeight="60.0"
+                        onAction="#onQuitButtonClick" styleClass="menu-button, quit-button"
+                        text="退出游戏" />
+            </VBox>
+        </center>
+
+        <bottom>
+            <HBox alignment="CENTER" BorderPane.alignment="CENTER">
+                <Label styleClass="footer-text" text="ORDER UP!  /  MAIN MENU" />
+                <padding>
+                    <Insets bottom="28.0" left="44.0" right="44.0" top="20.0" />
+                </padding>
+            </HBox>
+        </bottom>
+    </BorderPane>
+</StackPane>

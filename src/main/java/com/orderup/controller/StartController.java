@@ -3,22 +3,22 @@ package com.orderup.controller;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 
 public class StartController {
 
     @FXML
-    public void onStartButtonClick(ActionEvent actionEvent) {
+    private void onStartButtonClick(ActionEvent event) {
+        // TODO: Connect the game-start flow here. This action intentionally has no side effects yet.
     }
 
     @FXML
-    public void onSettingsButtonClick(ActionEvent actionEvent) {
+    private void onSettingsButtonClick(ActionEvent event) {
+        // TODO: Open the options screen here. This action intentionally has no side effects yet.
+
     }
 
     @FXML
-    public void onQuitButtonClick(ActionEvent actionEvent) {
+    private void onQuitButtonClick(ActionEvent event) {
         Platform.exit();
     }
-
-
 }
