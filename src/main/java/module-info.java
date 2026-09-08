@@ -1,6 +1,7 @@
 module com.orderup.orderup {
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.media;
 
 
     opens com.orderup to javafx.fxml;
