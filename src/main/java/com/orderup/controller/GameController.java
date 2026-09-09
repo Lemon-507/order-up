@@ -6,9 +6,9 @@ import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.cntrol.Label;
 
 import com.orderup.util.GameTimer;
 
@@ -30,7 +30,8 @@ public class GameController implements SceneController {
         gameTimer = new GameTimer(timeLabel, this::finishGame);
         gameTimer.startCountDown(60);
     }
-//todo:初始化游戏场景，食材，时间，分数等
+
+    //todo:初始化游戏场景，食材，时间，分数等
     public void startGame() {
 
     }
