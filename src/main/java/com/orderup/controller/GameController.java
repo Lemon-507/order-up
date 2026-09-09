@@ -8,6 +8,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.cntrol.Label;
+
+import com.orderup.util.GameTimer;
 
 public class GameController implements SceneController {
     private Launcher application;
@@ -16,10 +19,16 @@ public class GameController implements SceneController {
     private Canvas gameCanvas;
     private AnimationTimer gameLoop;
     Player player=new Player(200, 200, Color.RED);
+    private GameTimer gameTimer;
+    @FXML
+    private Label timeLabel;
 
     @Override
     public void setApplication(Launcher application) {
         this.application = application;
+
+        gameTimer = new GameTimer(timeLabel, this::finishGame);
+        gameTimer.startCountDown(60);
     }
 //todo:初始化游戏场景，食材，时间，分数等
     public void startGame() {
@@ -78,6 +87,7 @@ public class GameController implements SceneController {
    //结束
     public void finishGame() {
         gameLoop.stop();
+        gameTimer.stop();
         application.showResultScene();
     }
 }
