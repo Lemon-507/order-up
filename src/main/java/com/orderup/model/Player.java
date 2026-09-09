@@ -4,10 +4,12 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import lombok.Data;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@Data
 public class Player {
 
     // 玩家逻辑坐标x（水平方向）

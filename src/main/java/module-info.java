@@ -2,7 +2,7 @@ module com.orderup.orderup {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.media;
-    requires java.desktop;
+    requires static lombok;
 
 
     opens com.orderup to javafx.fxml;
