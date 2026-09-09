@@ -15,6 +15,7 @@ public class StartController implements SceneController {
 
     @FXML
     private void onStartButtonClick(ActionEvent event) {
+
         application.showGameScene();
     }
 
