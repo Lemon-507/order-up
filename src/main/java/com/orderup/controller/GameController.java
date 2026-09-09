@@ -30,7 +30,8 @@ public class GameController implements SceneController {
         gameTimer = new GameTimer(timeLabel, this::finishGame);
         gameTimer.startCountDown(60);
     }
-//todo:初始化游戏场景，食材，时间，分数等
+
+    //todo:初始化游戏场景，食材，时间，分数等
     public void startGame() {
 
     }
