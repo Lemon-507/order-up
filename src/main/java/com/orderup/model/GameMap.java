@@ -1,9 +1,15 @@
 package com.orderup.model;
 
+
+
 import javafx.scene.canvas.GraphicsContext;
+import lombok.Data;
+
 enum Mapname{map1,map2;}
 
 
+
+@Data
 public class GameMap {
     int mapid=1;
     private static int ROWS=9;
