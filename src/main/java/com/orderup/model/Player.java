@@ -76,7 +76,7 @@ public class Player {
         }
 
     }
-void render() {
+    void render() {
         view.setLayoutX(x);
         view.setLayoutY(y);
     }
