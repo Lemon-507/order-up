@@ -1,7 +1,6 @@
 package com.orderup.view;
 
 import com.orderup.controller.GameController;
-import com.orderup.controller.SceneNavigator;
 import com.orderup.model.Direction;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
@@ -14,7 +13,7 @@ import javafx.scene.input.KeyEvent;
 /**
  * 游戏页面的 JavaFX 显示层，负责输入、逐帧刷新和画布绘制。
  */
-public class GameView implements SceneView {
+public class GameView {
     private static final double WORLD_WIDTH = 1280;
     private static final double WORLD_HEIGHT = 720;
     private static final int GAME_SECONDS = 60;
@@ -26,7 +25,7 @@ public class GameView implements SceneView {
     private Label timeLabel;
 
     private final PlayerView playerView = new PlayerView();
-    private SceneNavigator navigator;
+    private Runnable onGameFinished = () -> { };
     private GameController controller;
     private AnimationTimer gameLoop;
     private long lastTime;
@@ -48,9 +47,8 @@ public class GameView implements SceneView {
         startGameLoop();
     }
 
-    @Override
-    public void setNavigator(SceneNavigator navigator) {
-        this.navigator = navigator;
+    public void setOnGameFinished(Runnable onGameFinished) {
+        this.onGameFinished = onGameFinished;
         gameCanvas.requestFocus();
     }
 
@@ -141,9 +139,7 @@ public class GameView implements SceneView {
 
     private void finishGame() {
         stopGameLoop();
-        if (navigator != null) {
-            navigator.showResultScene();
-        }
+        onGameFinished.run();
     }
 
     private void stopGameLoop() {
@@ -152,7 +148,6 @@ public class GameView implements SceneView {
         }
     }
 
-    @Override
     public void dispose() {
         disposed = true;
         stopGameLoop();

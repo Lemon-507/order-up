@@ -7,7 +7,6 @@ public class GameTimer {
     private final Runnable onTimeUp;
 
     private int secondsCount;
-    private int initialCountDownSeconds;
     private double accumulatedSeconds;
     private boolean running;
 
@@ -20,7 +19,6 @@ public class GameTimer {
             throw new IllegalArgumentException("Countdown seconds must be greater than zero.");
         }
 
-        initialCountDownSeconds = totalSeconds;
         secondsCount = totalSeconds;
         accumulatedSeconds = 0;
         running = true;
@@ -47,31 +45,11 @@ public class GameTimer {
         }
     }
 
-    public void pause() {
-        running = false;
-    }
-
-    public void resume() {
-        if (secondsCount > 0) {
-            running = true;
-        }
-    }
-
-    public void reset() {
-        running = false;
-        secondsCount = initialCountDownSeconds;
-        accumulatedSeconds = 0;
-    }
-
     public void stop() {
         running = false;
     }
 
     public int getSecondsCount() {
         return secondsCount;
-    }
-
-    public boolean isRunning() {
-        return running;
     }
 }

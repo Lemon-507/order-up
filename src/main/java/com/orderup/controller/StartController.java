@@ -1,29 +1,23 @@
 package com.orderup.controller;
 
-public class StartController implements SceneController {
-    private SceneNavigator navigator;
+public class StartController {
+    private Runnable startGame = () -> { };
+    private Runnable quitGame = () -> { };
 
-    @Override
-    public void setNavigator(SceneNavigator navigator) {
-        this.navigator = navigator;
+    public void configure(Runnable startGame, Runnable quitGame) {
+        this.startGame = startGame;
+        this.quitGame = quitGame;
     }
 
-    public void startGame() {
-        requireNavigator().showGameScene();
+    public void onStartButtonClick() {
+        startGame.run();
     }
 
-    public void openSettings() {
+    public void onSettingsButtonClick() {
         // TODO: Open the options screen here. This action intentionally has no side effects yet.
     }
 
-    public void quitGame() {
-        requireNavigator().exitApplication();
-    }
-
-    private SceneNavigator requireNavigator() {
-        if (navigator == null) {
-            throw new IllegalStateException("Scene navigator has not been configured.");
-        }
-        return navigator;
+    public void onQuitButtonClick() {
+        quitGame.run();
     }
 }
