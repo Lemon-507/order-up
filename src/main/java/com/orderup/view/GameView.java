@@ -25,6 +25,7 @@ public class GameView {
     @FXML
     private Label timeLabel;
 
+    private final GameMapView gameMapView = new GameMapView();
     private final PlayerView playerView = new PlayerView();
     private Runnable onGameFinished = () -> { };
     private GameController controller;
@@ -112,7 +113,7 @@ public class GameView {
 
     private void renderFrame(GraphicsContext graphics) {
         graphics.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
-        controller.getGameMap().drawAllTiles(graphics);
+        gameMapView.render(graphics, controller.getGameMap());
         playerView.render(graphics, controller.getPlayer());
         renderTime(controller.getRemainingSeconds());
     }

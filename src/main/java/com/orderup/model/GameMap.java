@@ -1,8 +1,5 @@
 package com.orderup.model;
 
-
-
-import javafx.scene.canvas.GraphicsContext;
 import lombok.Data;
 
 
@@ -37,13 +34,6 @@ public class GameMap {
        return tiles[x][y];
     }
 
-    public  void drawAllTiles(GraphicsContext gc) {
-        for (int r = 0; r < ROWS; r++) {
-            for (int c = 0; c < COLS; c++) {
-                tiles[r][c].draw(gc);
-            }
-        }
-    }
 }
 
 
