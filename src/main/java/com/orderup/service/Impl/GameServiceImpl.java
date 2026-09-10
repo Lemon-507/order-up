@@ -24,5 +24,7 @@ public class GameServiceImpl implements GameService {
         for (int i = 3; i < 5; i++) {
             map.setTiles(i, 5, TileType.WALL);
         }
+        map.AddItem(130, 130);
+
     }
 }
