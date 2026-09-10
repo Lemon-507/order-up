@@ -1,5 +1,5 @@
 package com.orderup.service;
 
-public class PlayerService {
+public interface PlayerService {
 
 }
