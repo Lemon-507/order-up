@@ -4,6 +4,7 @@ public class Tile {
       int rownumber;//行
       int colnumber;//列
       TileType TileType;
+      public boolean Interactable=false;//是否可交互
 
       public int TileSize=80;
 

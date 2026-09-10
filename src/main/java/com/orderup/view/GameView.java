@@ -26,12 +26,15 @@ public class GameView {
     private Label timeLabel;
 
     private final GameMapView gameMapView = new GameMapView();
+    private final InteractBlockView interactBlockView = new InteractBlockView();
+    private final GameItemView gameItemView = new GameItemView();
     private final PlayerView playerView = new PlayerView();
     private Runnable onGameFinished = () -> { };
     private GameController controller;
     private AnimationTimer gameLoop;
     private long lastTime;
     private int lastRenderedSeconds = -1;
+    private boolean interactKeyPressed;
     private boolean disposed;
 
     @FXML
@@ -62,11 +65,21 @@ public class GameView {
         gameCanvas.focusedProperty().addListener((observable, wasFocused, isFocused) -> {
             if (!isFocused) {
                 controller.clearInput();
+                interactKeyPressed = false;
             }
         });
     }
 
     private void onKeyPressed(KeyEvent event) {
+        if (event.getCode() == KeyCode.E) {
+            if (!interactKeyPressed) {
+                interactKeyPressed = true;
+                controller.InteractItem();
+            }
+            event.consume();
+            return;
+        }
+
         Direction direction = toDirection(event.getCode());
         if (direction != null) {
             controller.press(direction);
@@ -75,6 +88,12 @@ public class GameView {
     }
 
     private void onKeyReleased(KeyEvent event) {
+        if (event.getCode() == KeyCode.E) {
+            interactKeyPressed = false;
+            event.consume();
+            return;
+        }
+
         Direction direction = toDirection(event.getCode());
         if (direction != null) {
             controller.release(direction);
@@ -114,6 +133,8 @@ public class GameView {
     private void renderFrame(GraphicsContext graphics) {
         graphics.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
         gameMapView.render(graphics, controller.getGameMap());
+        interactBlockView.render(graphics, controller.getInteractBlock());
+        gameItemView.render(graphics, controller.getItems());
         playerView.render(graphics, controller.getPlayer());
         renderTime(controller.getRemainingSeconds());
     }

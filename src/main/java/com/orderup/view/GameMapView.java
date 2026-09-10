@@ -23,13 +23,23 @@ public class GameMapView {
         int y = tile.getY();
 
         if (tile.getType() == TileType.WALL) {
+            if(!tile.Interactable){
             graphics.setFill(Color.BLACK);
+            }
+            else {
+                graphics.setFill(Color.GRAY);
+            }
             graphics.fillRect(x, y, tile.TileSize, tile.TileSize);
             graphics.setStroke(Color.DARKGRAY);
         } else {
             graphics.setFill(Color.LIGHTGRAY);
             graphics.fillRect(x, y, tile.TileSize, tile.TileSize);
-            graphics.setStroke(Color.BLACK);
+            if(!tile.Interactable){
+                graphics.setStroke(Color.BLACK);
+            }
+            else {
+                graphics.setStroke(Color.GRAY);
+            }
         }
 
         graphics.setLineWidth(1);
