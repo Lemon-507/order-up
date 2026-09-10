@@ -1,5 +1,7 @@
 package com.orderup.model;
 
 public enum IngredientType {
-    FISH
+    FISH,
+    KELP,
+    RICE
 }

@@ -1,7 +1,7 @@
 package com.orderup.service.Impl;
 
 import com.orderup.model.GameMap;
-import com.orderup.model.Mapname;
+import com.orderup.model.MapName;
 import com.orderup.model.TileType;
 import com.orderup.service.GameService;
 
@@ -9,7 +9,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public void LoadMap(GameMap map) {
-        if (map.getMapname() != Mapname.map1) {
+        if (map.getMapname() != MapName.map1) {
             return;
         }
 

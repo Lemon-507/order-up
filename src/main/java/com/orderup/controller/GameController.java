@@ -2,7 +2,7 @@ package com.orderup.controller;
 
 import com.orderup.model.Direction;
 import com.orderup.model.GameMap;
-import com.orderup.model.Mapname;
+import com.orderup.model.MapName;
 import com.orderup.model.Player;
 import com.orderup.service.Impl.GameServiceImpl;
 import com.orderup.service.Impl.PlayerServiceImpl;
@@ -34,7 +34,7 @@ public class GameController {
         this.gameSeconds = gameSeconds;
         this.onGameFinished = onGameFinished;
         this.player = new Player(200, 200);
-        this.gameMap = new GameMap(Mapname.map1);
+        this.gameMap = new GameMap(MapName.map1);
         this.gameService = new GameServiceImpl();
         this.playerService = new PlayerServiceImpl();
         this.gameTimer = new GameTimer(this::finishGame);
