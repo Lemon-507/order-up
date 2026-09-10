@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class Order {
     private String orderId;
-    private String requiredDish;
+    private Recipe requiredDish;
     private String remainingTime;
     private String orderStatus;
 }

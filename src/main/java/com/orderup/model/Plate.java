@@ -9,5 +9,5 @@ import java.util.Set;
  */
 @Data
 public class Plate {
-    private Set<String> contents;
+    private Set<Ingredient> contents;
 }
