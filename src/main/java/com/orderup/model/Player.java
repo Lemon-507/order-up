@@ -10,9 +10,9 @@ public class Player {
     public static final double HEIGHT = 40;
     private static final double DEFAULT_SPEED = 220;
 
-    private final Set<Direction> pressedDirections = EnumSet.noneOf(Direction.class);
-    private double x;
-    private double y;
+  public final Set<Direction> pressedDirections = EnumSet.noneOf(Direction.class);
+    public double x;
+    public double y;
     private double speed;
 
     public Player(double startX, double startY) {
@@ -37,30 +37,30 @@ public class Player {
         pressedDirections.clear();
     }
 
-    public void update(double deltaSeconds, double worldWidth, double worldHeight) {
-        double dx = 0;
-        double dy = 0;
+//    public void update(double deltaSeconds, double worldWidth, double worldHeight) {
+//        double dx = 0;
+//        double dy = 0;
+//
+//        if (pressedDirections.contains(Direction.UP)) {
+//            dy -= 1;
+//        }
+//        if (pressedDirections.contains(Direction.DOWN)) {
+//            dy += 1;
+//        }
+//        if (pressedDirections.contains(Direction.LEFT)) {
+//            dx -= 1;
+//        }
+//        if (pressedDirections.contains(Direction.RIGHT)) {
+//            dx += 1;
+//        }
+//
+//        x = clamp(x + dx * speed * deltaSeconds, 0, worldWidth - WIDTH);
+//        y = clamp(y + dy * speed * deltaSeconds, 0, worldHeight - HEIGHT);
+//    }
 
-        if (pressedDirections.contains(Direction.UP)) {
-            dy -= 1;
-        }
-        if (pressedDirections.contains(Direction.DOWN)) {
-            dy += 1;
-        }
-        if (pressedDirections.contains(Direction.LEFT)) {
-            dx -= 1;
-        }
-        if (pressedDirections.contains(Direction.RIGHT)) {
-            dx += 1;
-        }
-
-        x = clamp(x + dx * speed * deltaSeconds, 0, worldWidth - WIDTH);
-        y = clamp(y + dy * speed * deltaSeconds, 0, worldHeight - HEIGHT);
-    }
-
-    private double clamp(double value, double minimum, double maximum) {
-        return Math.max(minimum, Math.min(value, maximum));
-    }
+//    public double clamp(double value, double minimum, double maximum) {
+//        return Math.max(minimum, Math.min(value, maximum));
+//    }
 
     public double getX() {
         return x;

@@ -3,6 +3,7 @@ package com.orderup.view;
 import com.orderup.controller.GameController;
 import com.orderup.model.Direction;
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -45,6 +46,7 @@ public class GameView {
         configureInput();
         renderFrame(gameCanvas.getGraphicsContext2D());
         startGameLoop();
+        Platform.runLater(gameCanvas::requestFocus);
     }
 
     public void setOnGameFinished(Runnable onGameFinished) {
@@ -110,6 +112,7 @@ public class GameView {
 
     private void renderFrame(GraphicsContext graphics) {
         graphics.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
+        controller.getGameMap().drawAllTiles(graphics);
         playerView.render(graphics, controller.getPlayer());
         renderTime(controller.getRemainingSeconds());
     }
