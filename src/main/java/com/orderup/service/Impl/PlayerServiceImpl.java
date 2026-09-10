@@ -3,7 +3,7 @@ package com.orderup.service.Impl;
 import com.orderup.model.Direction;
 import com.orderup.model.GameMap;
 import com.orderup.model.Player;
-import com.orderup.model.StationType;
+import com.orderup.model.TileType;
 import com.orderup.model.Tile;
 import com.orderup.service.PlayerService;
 
@@ -38,7 +38,7 @@ public class PlayerServiceImpl implements PlayerService {
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 13; j++) {
                 Tile tile = gameMap.getTiles(i, j);
-                if (tile.getType() != StationType.WALL) {
+                if (tile.getType() != TileType.WALL) {
                     continue;
                 }
 

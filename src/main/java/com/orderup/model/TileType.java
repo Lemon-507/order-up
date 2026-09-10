@@ -1,6 +1,6 @@
 package com.orderup.model;
 
-public enum StationType {
+public enum TileType {
     INGREDIENT_SOURCE, //食材库
     CUTTING_BOARD, //切菜板
     FRYING_PAN,//煎锅

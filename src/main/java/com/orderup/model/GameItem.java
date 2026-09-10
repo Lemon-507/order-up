@@ -9,4 +9,8 @@ import lombok.Data;
 public class GameItem {
     private String itemId;
     private String itemType;
+    private int x;
+    private int y;
+    private int width;
+    private int height;
 }

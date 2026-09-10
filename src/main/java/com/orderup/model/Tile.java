@@ -8,14 +8,14 @@ import javafx.scene.paint.Color;
 public class Tile {
       int rownumber;//行
       int colnumber;//列
-      StationType TileType;
+      TileType TileType;
 
       public int TileSize=80;
 
       Tile(int x, int y){
           rownumber=y;
           colnumber=x;
-          TileType=StationType.FLOOR;
+          TileType= com.orderup.model.TileType.FLOOR;
       }
       public int getX() {
           return colnumber*TileSize;
@@ -24,7 +24,7 @@ public class Tile {
           return rownumber*TileSize;
       }
 
-    public StationType getType() {
+    public TileType getType() {
         return TileType;
     }
 
@@ -32,7 +32,7 @@ public class Tile {
         int x = getX();
         int y = getY();
 
-        if (TileType == StationType.WALL) {
+        if (TileType == com.orderup.model.TileType.WALL) {
             //墙体填充黑色
             gc.setFill(Color.BLACK);
             gc.fillRect(x, y, TileSize, TileSize);

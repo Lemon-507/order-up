@@ -29,7 +29,7 @@ public class GameMap {
     }
 
     //瓷砖Type
-    public void setTiles(int x, int y, StationType typeI){
+    public void setTiles(int x, int y, TileType typeI){
         tiles[x][y].TileType=typeI;
     }
 

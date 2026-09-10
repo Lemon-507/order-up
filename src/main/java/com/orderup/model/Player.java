@@ -37,30 +37,6 @@ public class Player {
         pressedDirections.clear();
     }
 
-//    public void update(double deltaSeconds, double worldWidth, double worldHeight) {
-//        double dx = 0;
-//        double dy = 0;
-//
-//        if (pressedDirections.contains(Direction.UP)) {
-//            dy -= 1;
-//        }
-//        if (pressedDirections.contains(Direction.DOWN)) {
-//            dy += 1;
-//        }
-//        if (pressedDirections.contains(Direction.LEFT)) {
-//            dx -= 1;
-//        }
-//        if (pressedDirections.contains(Direction.RIGHT)) {
-//            dx += 1;
-//        }
-//
-//        x = clamp(x + dx * speed * deltaSeconds, 0, worldWidth - WIDTH);
-//        y = clamp(y + dy * speed * deltaSeconds, 0, worldHeight - HEIGHT);
-//    }
-
-//    public double clamp(double value, double minimum, double maximum) {
-//        return Math.max(minimum, Math.min(value, maximum));
-//    }
 
     public double getX() {
         return x;
