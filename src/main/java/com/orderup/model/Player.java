@@ -68,7 +68,7 @@ void render() {
     }
     public void draw(GraphicsContext gc){
         gc.setFill(Color.RED);
-        gc.fillRect(x,y,30,30);
+        gc.fillRect(x,y,40,40);
     }
 
 }

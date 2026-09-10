@@ -23,7 +23,7 @@ public class PlayerService {
 
         player.isSpeedup = pressedKeys.contains(KeyCode.SPACE);
         if(player.isSpeedup){
-            player.speed = 400; // 建议放大数值，dt是0.016，40太慢
+            player.speed = 300;
         }else{
             player.speed = 200;
         }
@@ -53,9 +53,9 @@ public class PlayerService {
 
 
                 if (player.y + ph > ty && player.y < ty + th) {
-                    // 玩家右侧碰到墙左边缘（缓冲10像素）
+                    // 玩家右侧碰到墙左边缘
                     if (player.x + pw >= tx && player.x + pw <= tx + tile.TileSize/4) {
-                        player.x = tx - pw; // 贴到墙左边外侧
+                        player.x = tx - player.getWIDTH(); // 贴到墙左边外侧
                     }
                     // 玩家左侧碰到墙右边缘
                     else if (player.x <= tx + tw && player.x >= tx + tw - tile.TileSize/4) {
@@ -67,7 +67,7 @@ public class PlayerService {
                 if (player.x + pw > tx && player.x < tx + tw) {
                     // 玩家底部撞到墙顶部
                     if (player.y + ph >= ty && player.y + ph <= ty + tile.TileSize/4) {
-                        player.y = ty - ph;
+                        player.y = ty - player.getHEIGHT();
                     }
                     // 玩家顶部撞到墙底部
                     if (player.y <= ty + th && player.y >= ty + th - tile.TileSize/4) {
