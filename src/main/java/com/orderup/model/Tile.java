@@ -1,22 +1,22 @@
 package com.orderup.model;
 
 public class Tile {
-      int rownumber;//行
-      int colnumber;//列
+      int rowNumber;//行
+      int colNumber;//列
       TileType TileType;
 
       public int TileSize=80;
 
       Tile(int x, int y){
-          rownumber=y;
-          colnumber=x;
+          rowNumber =y;
+          colNumber =x;
           TileType= com.orderup.model.TileType.FLOOR;
       }
       public int getX() {
-          return colnumber*TileSize;
+          return colNumber *TileSize;
       }
       public int getY() {
-          return rownumber*TileSize;
+          return rowNumber *TileSize;
       }
 
     public TileType getType() {
