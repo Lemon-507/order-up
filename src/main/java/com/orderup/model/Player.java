@@ -1,10 +1,12 @@
 package com.orderup.model;
 
 
+import lombok.Data;
+
 import java.util.EnumSet;
 import java.util.Set;
 
-
+@Data
 public class Player {
     public static final double WIDTH = 40;
     public static final double HEIGHT = 40;
@@ -35,22 +37,5 @@ public class Player {
 
     public void clearMovement() {
         pressedDirections.clear();
-    }
-
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public double getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(double speed) {
-        this.speed = speed;
     }
 }
