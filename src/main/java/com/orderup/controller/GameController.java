@@ -36,10 +36,12 @@ public class GameController implements SceneController {
 
     }
 
+    /**
+     * 初始化
+     */
     @FXML
     public void initialize() {
         startGame();
-
 
         // 监听键盘事件
         // 键盘按下
@@ -55,7 +57,6 @@ public class GameController implements SceneController {
         gameCanvas.requestFocus();
         GraphicsContext gc = gameCanvas.getGraphicsContext2D();
 
-
         // 游戏循环
         gameLoop = new AnimationTimer() {
 
@@ -66,9 +67,6 @@ public class GameController implements SceneController {
                 render(gc);
             }
         };
-
-
-
 
 
         gameCanvas.setFocusTraversable(true);
