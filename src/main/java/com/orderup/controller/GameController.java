@@ -1,7 +1,11 @@
 package com.orderup.controller;
 
 import com.orderup.model.Direction;
+import com.orderup.model.GameMap;
+import com.orderup.model.Mapname;
 import com.orderup.model.Player;
+import com.orderup.service.Impl.GameServiceImpl;
+import com.orderup.service.Impl.PlayerServiceImpl;
 import com.orderup.util.GameTimer;
 
 /**
@@ -9,6 +13,9 @@ import com.orderup.util.GameTimer;
  */
 public class GameController {
     private final Player player;
+    private final GameMap gameMap;
+    private final GameServiceImpl gameService;
+    private final PlayerServiceImpl playerService;
     private final GameTimer gameTimer;
     private final double worldWidth;
     private final double worldHeight;
@@ -27,7 +34,11 @@ public class GameController {
         this.gameSeconds = gameSeconds;
         this.onGameFinished = onGameFinished;
         this.player = new Player(200, 200);
+        this.gameMap = new GameMap(Mapname.map1);
+        this.gameService = new GameServiceImpl();
+        this.playerService = new PlayerServiceImpl();
         this.gameTimer = new GameTimer(this::finishGame);
+        gameService.LoadMap(gameMap);
     }
 
     public void startGame() {
@@ -51,7 +62,7 @@ public class GameController {
         if (finished) {
             return;
         }
-        player.update(deltaSeconds, worldWidth, worldHeight);
+        playerService.move(player, deltaSeconds, worldWidth, worldHeight, gameMap);
         gameTimer.update(deltaSeconds);
     }
 
@@ -74,6 +85,10 @@ public class GameController {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public GameMap getGameMap() {
+        return gameMap;
     }
 
     public int getRemainingSeconds() {
