@@ -2,7 +2,11 @@ package com.orderup.controller;
 
 import com.orderup.Launcher;
 import com.orderup.model.GameMap;
+
 import com.orderup.model.Player;
+import com.orderup.model.StationType;
+import com.orderup.service.GameService;
+import com.orderup.service.PlayerService;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -12,13 +16,18 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import com.orderup.util.GameTimer;
 
-public class GameController implements SceneController {
+
+import static com.orderup.model.Mapname.map1;
+import static java.nio.file.Files.move;
+
+public class GameController implements SceneController, GameService {
     private Launcher application;
     private long lastTime = 0;
     @FXML
     private Canvas gameCanvas;
     private AnimationTimer gameLoop;
     Player player = new Player(200, 200, Color.RED);
+    PlayerService playerService = new PlayerService();
     private GameTimer gameTimer;
     @FXML
     private Label timeLabel;
@@ -32,17 +41,37 @@ public class GameController implements SceneController {
         gameTimer = new GameTimer(timeLabel, this::finishGame);
         gameTimer.startCountDown(60);
     }
+    public void LoadMap(GameMap gameMap) {
+        if(gameMap.getMapname()==map1) {
+            for (int i = 0; i < 9; i++) {
+                gameMap.setTiles(i, 0, StationType.WALL);
+            }
+            for (int i = 0; i < 9; i++) {
+                gameMap.setTiles(i, 12, StationType.WALL);
+            }
+            for (int i = 0; i < 13; i++) {
+                gameMap.setTiles(0, i, StationType.WALL);
+            }
+            for (int i = 0; i < 13; i++) {
+                gameMap.setTiles(8, i, StationType.WALL);
+            }
+           for (int i = 3; i < 5; i++) {
+                gameMap.setTiles(i, 5, StationType.WALL);
+           }
+        }
+    }
 
     //todo:初始化游戏场景，食材，时间，分数等
     public void startGame() {
         // 在这里初始化地图
-        gameMap = new GameMap();
+        gameMap = new GameMap(map1);
+        LoadMap(gameMap);
     }
 
     @FXML
     public void initialize() {
         startGame();
-
+        
         // 监听键盘事件
         gameCanvas.setOnKeyPressed((KeyEvent e) -> {
             player.pressedKeys.add(e.getCode());
@@ -69,7 +98,7 @@ public class GameController implements SceneController {
     }
 
     public void update(double dt) {
-        player.P_update(dt);
+        playerService.move(player,dt,player.pressedKeys,gameMap);
     }
 
     //渲染：清空画布 → 画网格 → 画玩家

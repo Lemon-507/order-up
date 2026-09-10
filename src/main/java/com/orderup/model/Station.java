@@ -8,8 +8,16 @@ import lombok.Data;
 @Data
 public class Station {
     private String stationId;
-    private String stationType;
+    private StationType stationType;
     private String position;
     private String currentItem;
     private String processingProgress;
+
+
+
+
+
+
+
+
 }
