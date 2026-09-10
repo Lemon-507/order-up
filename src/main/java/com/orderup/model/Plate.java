@@ -13,7 +13,7 @@ import java.util.List;
  * 玩家拾取/手持移动、朝向检测和订单列表查找由调用方完成。
  */
 @Data
-public class Plate {
+public class Plate extends GameItem{
     /**
      * 盘内食材。使用 List 以允许同种食材重复放入。
      */
@@ -22,7 +22,7 @@ public class Plate {
     /**
      * 非 {@link IngredientStatus#RAW} 的食材可以装盘。
      */
-    public boolean canAccept(Ingredient ingredient) {
+    private boolean canAccept(Ingredient ingredient) {
         return ingredient != null
                 && ingredient.getProcessStatus() != null
                 && ingredient.getProcessStatus() != IngredientStatus.RAW;
@@ -43,14 +43,14 @@ public class Plate {
         return contents.add(ingredient);
     }
 
-    public boolean isEmpty() {
+    private boolean isEmpty() {
         return contents == null || contents.isEmpty();
     }
 
     /**
      * 空盘不能与送餐口交互；不完整或错误组合可以交互。
      */
-    public boolean canSubmitToServingCounter() {
+    private boolean canSubmitToServingCounter() {
         return !isEmpty();
     }
 
@@ -64,7 +64,7 @@ public class Plate {
     /**
      * 按既定菜谱识别菜肴。无法识别时返回 {@code null}。
      */
-    public DishType getDishType() {
+    private DishType getDishType() {
         if (isEmpty()) {
             return null;
         }
@@ -84,7 +84,7 @@ public class Plate {
     /**
      * 盘内菜肴名称，供与订单 {@link Recipe#getDishName()} 匹配。
      */
-    public String getDishName() {
+    private String getDishName() {
         DishType dishType = getDishType();
         if (dishType == null) {
             return null;
@@ -130,7 +130,7 @@ public class Plate {
     /**
      * 送餐完成后清空盘子，盘子仍由玩家持有。
      */
-    public void clear() {
+    private void clear() {
         if (contents == null) {
             contents = new ArrayList<>();
         } else {

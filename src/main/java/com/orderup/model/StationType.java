@@ -7,5 +7,6 @@ public enum StationType {
     COOKING_POT,
     BLENDER,
     SERVING_COUNTER,
-    TRASH_BIN //垃圾桶
+    TRASH_BIN, //垃圾桶
+    TABLE
 }
