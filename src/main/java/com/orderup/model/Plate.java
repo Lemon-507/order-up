@@ -8,6 +8,6 @@ import java.util.Set;
  * 保存已装入盘中的食材组合，用于形成菜肴并提交订单。
  */
 @Data
-public class Plate {
+public class Plate extends GameItem {
     private Set<Ingredient> contents;
 }
