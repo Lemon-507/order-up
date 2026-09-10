@@ -1,92 +1,82 @@
 package com.orderup.controller;
 
-import com.orderup.Launcher;
+import com.orderup.model.Direction;
 import com.orderup.model.Player;
-import javafx.animation.AnimationTimer;
-import javafx.fxml.FXML;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Label;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
-
 import com.orderup.util.GameTimer;
 
-public class GameController implements SceneController {
-    private Launcher application;
-    private long lastTime = 0;
-    @FXML
-    private Canvas gameCanvas;
-    private AnimationTimer gameLoop;
-    Player player=new Player(200, 200, Color.RED);
-    private GameTimer gameTimer;
-    @FXML
-    private Label timeLabel;
+/**
+ * 游戏页面的状态协调器，只负责输入、更新和结束条件。
+ */
+public class GameController {
+    private final Player player;
+    private final GameTimer gameTimer;
+    private final double worldWidth;
+    private final double worldHeight;
+    private final int gameSeconds;
+    private final Runnable onGameFinished;
+    private boolean finished;
 
-    @Override
-    public void setApplication(Launcher application) {
-        this.application = application;
-
-        gameTimer = new GameTimer(timeLabel, this::finishGame);
-        gameTimer.startCountDown(60);
+    public GameController(
+            double worldWidth,
+            double worldHeight,
+            int gameSeconds,
+            Runnable onGameFinished
+    ) {
+        this.worldWidth = worldWidth;
+        this.worldHeight = worldHeight;
+        this.gameSeconds = gameSeconds;
+        this.onGameFinished = onGameFinished;
+        this.player = new Player(200, 200);
+        this.gameTimer = new GameTimer(this::finishGame);
     }
 
-    //todo:初始化游戏场景，食材，时间，分数等
     public void startGame() {
-
+        finished = false;
+        gameTimer.startCountDown(gameSeconds);
     }
 
-    /**
-     * 初始化
-     */
-    @FXML
-    public void initialize() {
-        startGame();
-
-        // 监听键盘事件
-        // 键盘按下
-        gameCanvas.setOnKeyPressed((KeyEvent e)->{
-            player.pressedKeys.add(e.getCode());
-        });
-        // 键盘松开
-        gameCanvas.setOnKeyReleased((KeyEvent e)->{
-            player.pressedKeys.remove(e.getCode());
-        });
-
-
-        gameCanvas.requestFocus();
-        GraphicsContext gc = gameCanvas.getGraphicsContext2D();
-
-        // 游戏循环
-        gameLoop = new AnimationTimer() {
-
-
-            @Override
-            public void handle(long now) {
-                update(0.016);
-                render(gc);
-            }
-        };
-
-
-        gameCanvas.setFocusTraversable(true);
-        gameLoop.start();
+    public void press(Direction direction) {
+        player.press(direction);
     }
 
-
-    public void update(double dt) {
-        player.P_update(dt);
+    public void release(Direction direction) {
+        player.release(direction);
     }
 
-    //渲染
-    private void render(GraphicsContext gc) {
-        gc.clearRect(0,0,1280,720);
-        player.draw(gc);
+    public void clearInput() {
+        player.clearMovement();
     }
-   //结束
+
+    public void update(double deltaSeconds) {
+        if (finished) {
+            return;
+        }
+        player.update(deltaSeconds, worldWidth, worldHeight);
+        gameTimer.update(deltaSeconds);
+    }
+
     public void finishGame() {
-        gameLoop.stop();
+        if (finished) {
+            return;
+        }
+
+        finished = true;
         gameTimer.stop();
-        application.showResultScene();
+        player.clearMovement();
+        onGameFinished.run();
+    }
+
+    public void stopGame() {
+        finished = true;
+        gameTimer.stop();
+        player.clearMovement();
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public int getRemainingSeconds() {
+        return gameTimer.getSecondsCount();
     }
 }

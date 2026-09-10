@@ -2,11 +2,10 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.control.Label?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.orderup.controller.GameController"
+            fx:controller="com.orderup.view.GameView"
             prefHeight="720.0" prefWidth="1280.0">
 <Canvas fx:id="gameCanvas" width="1280" height="720"/>
   <Label fx:id="timeLabel"

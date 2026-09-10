@@ -1,20 +1,25 @@
 package com.orderup.controller;
 
-import com.orderup.Launcher;
-
 public class ResultController implements SceneController {
-    private Launcher application;
+    private SceneNavigator navigator;
 
     @Override
-    public void setApplication(Launcher application) {
-        this.application = application;
+    public void setNavigator(SceneNavigator navigator) {
+        this.navigator = navigator;
     }
 
     public void restartGame() {
-        application.showGameScene();
+        requireNavigator().showGameScene();
     }
 
     public void returnToMenu() {
-        application.showStartScene();
+        requireNavigator().showStartScene();
+    }
+
+    private SceneNavigator requireNavigator() {
+        if (navigator == null) {
+            throw new IllegalStateException("Scene navigator has not been configured.");
+        }
+        return navigator;
     }
 }
