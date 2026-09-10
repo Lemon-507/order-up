@@ -1,86 +1,55 @@
 package com.orderup.util;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.scene.control.Label;
-import javafx.util.Duration;
-
+/**
+ * 与显示框架无关的游戏倒计时，由游戏循环传入每帧经过的秒数。
+ */
 public class GameTimer {
-    private final Timeline timeline;
-    private final Label timeLabel;
     private final Runnable onTimeUp;
 
     private int secondsCount;
-    private int initialCountDownSeconds;
+    private double accumulatedSeconds;
+    private boolean running;
 
-    public GameTimer(Label timeLabel, Runnable onTimeUp) {
-        this.timeLabel = timeLabel;
+    public GameTimer(Runnable onTimeUp) {
         this.onTimeUp = onTimeUp;
-
-        timeline = new Timeline(
-                new KeyFrame(Duration.seconds(1), event -> updateTimer())
-        );
-        timeline.setCycleCount(Animation.INDEFINITE);
     }
 
     public void startCountDown(int totalSeconds) {
-        timeline.stop();
+        if (totalSeconds <= 0) {
+            throw new IllegalArgumentException("Countdown seconds must be greater than zero.");
+        }
 
-        initialCountDownSeconds = totalSeconds;
         secondsCount = totalSeconds;
-
-        renderTime();
-        timeline.playFromStart();
+        accumulatedSeconds = 0;
+        running = true;
     }
 
-    private void updateTimer() {
-        secondsCount--;
-        renderTime();
-
-        if (secondsCount <= 0) {
-            secondsCount = 0;
-            renderTime();
-            timeline.stop();
-            onTimeUp.run();
+    public void update(double deltaSeconds) {
+        if (!running) {
+            return;
         }
-    }
-
-    private void renderTime() {
-        int minutes = secondsCount / 60;
-        int seconds = secondsCount % 60;
-
-        timeLabel.setText(
-                String.format("%02d:%02d", minutes, seconds)
-        );
-
-        if (secondsCount <= 10) {
-            timeLabel.setStyle(
-                    "-fx-font-size: 48px;" +
-                            "-fx-font-weight: bold;" +
-                            "-fx-text-fill: red;" +
-                            "-fx-background-color: rgba(0,0,0,0.55);" +
-                            "-fx-padding: 8 18;" +
-                            "-fx-background-radius: 10;"
-            );
+        if (deltaSeconds < 0) {
+            throw new IllegalArgumentException("Delta seconds cannot be negative.");
         }
-    }
 
-    public void pause() {
-        timeline.pause();
-    }
+        accumulatedSeconds += deltaSeconds;
+        while (running && accumulatedSeconds >= 1) {
+            accumulatedSeconds -= 1;
+            secondsCount--;
 
-    public void resume() {
-        timeline.play();
-    }
-
-    public void reset() {
-        timeline.stop();
-        secondsCount = initialCountDownSeconds;
-        renderTime();
+            if (secondsCount <= 0) {
+                secondsCount = 0;
+                running = false;
+                onTimeUp.run();
+            }
+        }
     }
 
     public void stop() {
-        timeline.stop();
+        running = false;
+    }
+
+    public int getSecondsCount() {
+        return secondsCount;
     }
 }

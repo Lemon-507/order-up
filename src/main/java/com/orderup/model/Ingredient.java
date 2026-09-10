@@ -7,8 +7,8 @@ import lombok.Data;
  */
 @Data
 public class Ingredient {
-    private String ingredientType;
-    private String processState;
-    private String processProgress;
+    private IngredientType ingredientType;
+    private IngredientStatus processStatus;
+    private double processProgress;
 
 }

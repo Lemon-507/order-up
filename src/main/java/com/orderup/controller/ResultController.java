@@ -1,20 +1,19 @@
 package com.orderup.controller;
 
-import com.orderup.Launcher;
+public class ResultController {
+    private Runnable restartGame = () -> { };
+    private Runnable returnToMenu = () -> { };
 
-public class ResultController implements SceneController {
-    private Launcher application;
-
-    @Override
-    public void setApplication(Launcher application) {
-        this.application = application;
+    public void configure(Runnable restartGame, Runnable returnToMenu) {
+        this.restartGame = restartGame;
+        this.returnToMenu = returnToMenu;
     }
 
     public void restartGame() {
-        application.showGameScene();
+        restartGame.run();
     }
 
     public void returnToMenu() {
-        application.showStartScene();
+        returnToMenu.run();
     }
 }

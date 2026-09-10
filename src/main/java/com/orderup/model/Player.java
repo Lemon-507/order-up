@@ -1,74 +1,80 @@
 package com.orderup.model;
 
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.KeyCode;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import lombok.Data;
 
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
-@Data
+
 public class Player {
+    public static final double WIDTH = 40;
+    public static final double HEIGHT = 40;
+    private static final double DEFAULT_SPEED = 220;
 
-    // 玩家逻辑坐标x（水平方向）
-    public double x;
-    // 玩家逻辑坐标y（垂直方向）
-    public double y;
-    // 玩家移动速度
-    public double speed;
+    private final Set<Direction> pressedDirections = EnumSet.noneOf(Direction.class);
+    private double x;
+    private double y;
+    private double speed;
 
-    public boolean isSpeedup;
-    // GUI矩形图形对象，窗口上看到的方块
-    public Rectangle view;
-    // 玩家方块宽度常量
-    public  final double WIDTH = 40;
-    // 玩家方块高度常量
-    public final double HEIGHT = 40;
-    public Set<KeyCode> pressedKeys = new HashSet<>();
-
-    public double getWIDTH() {
-        return WIDTH;
+    public Player(double startX, double startY) {
+        this(startX, startY, DEFAULT_SPEED);
     }
 
-    public double getHEIGHT() {
-
-        return HEIGHT;
+    public Player(double startX, double startY, double speed) {
+        this.x = startX;
+        this.y = startY;
+        this.speed = speed;
     }
 
-    public Player(double startX, double startY, Color color) {
-        x = startX;
-        y = startY;
-        // 设置移动速度
-        if(isSpeedup){
-            speed = 300;
-        }else{
-            speed = 200;
+    public void press(Direction direction) {
+        pressedDirections.add(direction);
+    }
+
+    public void release(Direction direction) {
+        pressedDirections.remove(direction);
+    }
+
+    public void clearMovement() {
+        pressedDirections.clear();
+    }
+
+    public void update(double deltaSeconds, double worldWidth, double worldHeight) {
+        double dx = 0;
+        double dy = 0;
+
+        if (pressedDirections.contains(Direction.UP)) {
+            dy -= 1;
         }
-        speed = 220;
-        // 创建矩形图形
-        view = new Rectangle(x, y, WIDTH, HEIGHT);
-        // 设置矩形填充颜色
-        view.setFill(color);
-    }
-    // ————————————————————————————————————————————————————————玩家移动见playerService——————————————————————————————————————————————————————————————
-
-public boolean isColliding(Tile tile) {
-        if(x>tile.getX()&&x<tile.getX()+tile.TileSize){
-            return true;
-        } else if (y>tile.getY()&&y<tile.getY()+tile.TileSize) {
-            return true;
+        if (pressedDirections.contains(Direction.DOWN)) {
+            dy += 1;
         }
-        return false;
-}
-void render() {
-        view.setLayoutX(x);
-        view.setLayoutY(y);
-    }
-    public void draw(GraphicsContext gc){
-        gc.setFill(Color.RED);
-        gc.fillRect(x,y,40,40);
+        if (pressedDirections.contains(Direction.LEFT)) {
+            dx -= 1;
+        }
+        if (pressedDirections.contains(Direction.RIGHT)) {
+            dx += 1;
+        }
+
+        x = clamp(x + dx * speed * deltaSeconds, 0, worldWidth - WIDTH);
+        y = clamp(y + dy * speed * deltaSeconds, 0, worldHeight - HEIGHT);
     }
 
+    private double clamp(double value, double minimum, double maximum) {
+        return Math.max(minimum, Math.min(value, maximum));
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
 }

@@ -1,7 +1,10 @@
 package com.orderup;
 
-import com.orderup.controller.SceneController;
+import com.orderup.controller.ResultController;
+import com.orderup.controller.StartController;
+import com.orderup.view.GameView;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -13,7 +16,7 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Order Up 的应用入口，统一管理主窗口和页面切换。
+ * Order Up 的 JavaFX 启动入口，负责窗口和页面切换。
  */
 public class Launcher extends Application {
     private static final double WINDOW_WIDTH = 1280;
@@ -21,6 +24,7 @@ public class Launcher extends Application {
 
     private Stage primaryStage;
     private MediaPlayer menuMusic;
+    private GameView currentGameView;
 
     public static void main(String[] args) {
         Application.launch(Launcher.class, args);
@@ -29,12 +33,11 @@ public class Launcher extends Application {
     @Override
     public void start(Stage stage) {
         primaryStage = stage;
-        primaryStage.setTitle("Order Up!");
-        primaryStage.setMinWidth(960);
-        primaryStage.setMinHeight(540);
-
+        stage.setTitle("Order Up!");
+        stage.setMinWidth(960);
+        stage.setMinHeight(540);
         showStartScene();
-        primaryStage.show();
+        stage.show();
     }
 
     public void showStartScene() {
@@ -53,45 +56,55 @@ public class Launcher extends Application {
     }
 
     private void showScene(String fxmlPath) {
-        URL fxmlResource = Launcher.class.getResource(fxmlPath);
-        if (fxmlResource == null) {
+        URL resource = Launcher.class.getResource(fxmlPath);
+        if (resource == null) {
             throw new IllegalStateException("FXML resource was not found: " + fxmlPath);
         }
 
-        FXMLLoader loader = new FXMLLoader(fxmlResource);
         try {
+            FXMLLoader loader = new FXMLLoader(resource);
             Parent root = loader.load();
-            Object controller = loader.getController();
-            if (controller instanceof SceneController sceneController) {
-                sceneController.setApplication(this);
-            }
+            Object nextController = loader.getController();
 
-            Scene currentScene = primaryStage.getScene();
-            if (currentScene == null) {
+            if (currentGameView != null) {
+                currentGameView.dispose();
+                currentGameView = null;
+            }
+            configureController(nextController);
+
+            Scene scene = primaryStage.getScene();
+            if (scene == null) {
                 primaryStage.setScene(new Scene(root, WINDOW_WIDTH, WINDOW_HEIGHT));
             } else {
-                currentScene.setRoot(root);
+                scene.setRoot(root);
             }
         } catch (IOException exception) {
             throw new IllegalStateException("Failed to load scene: " + fxmlPath, exception);
         }
     }
 
+    private void configureController(Object controller) {
+        if (controller instanceof StartController startController) {
+            startController.configure(this::showGameScene, Platform::exit);
+        } else if (controller instanceof ResultController resultController) {
+            resultController.configure(this::showGameScene, this::showStartScene);
+        } else if (controller instanceof GameView gameView) {
+            gameView.setOnGameFinished(this::showResultScene);
+            currentGameView = gameView;
+        }
+    }
+
     private void playMenuMusic() {
-        if (menuMusic != null) {
-            menuMusic.play();
-            return;
+        if (menuMusic == null) {
+            URL resource = Launcher.class.getResource("/com/orderup/audio/startmenu.mp3");
+            if (resource == null) {
+                System.err.println("Start menu music was not found.");
+                return;
+            }
+            menuMusic = new MediaPlayer(new Media(resource.toExternalForm()));
+            menuMusic.setCycleCount(MediaPlayer.INDEFINITE);
+            menuMusic.setVolume(0.35);
         }
-
-        URL musicResource = Launcher.class.getResource("/com/orderup/audio/startmenu.mp3");
-        if (musicResource == null) {
-            System.err.println("Start menu music was not found: /com/orderup/audio/startmenu.mp3");
-            return;
-        }
-
-        menuMusic = new MediaPlayer(new Media(musicResource.toExternalForm()));
-        menuMusic.setCycleCount(MediaPlayer.INDEFINITE);
-        menuMusic.setVolume(0.35);
         menuMusic.play();
     }
 
@@ -103,9 +116,11 @@ public class Launcher extends Application {
 
     @Override
     public void stop() {
+        if (currentGameView != null) {
+            currentGameView.dispose();
+        }
         if (menuMusic != null) {
             menuMusic.dispose();
-            menuMusic = null;
         }
     }
 }
