@@ -8,8 +8,8 @@ import java.util.List;
 
 @Data
 public class GameMap {
-    MapName mapname;
-    int mapid=1;
+    private MapName mapname;
+    private int mapId =1;
     private static int ROWS=9;
     private static int COLS=13;
     public Tile[][] tiles;
@@ -23,10 +23,6 @@ public class GameMap {
             }
         }
         mapname= mapName1;
-    }
-
-    public MapName getMapname() {
-        return mapname;
     }
 
     //瓷砖Type
@@ -45,7 +41,7 @@ public class GameMap {
         return items;
     }
 
-    public  Tile getTiles(int x, int y){
+    public Tile getTiles(int x, int y){
        return tiles[x][y];
     }
 

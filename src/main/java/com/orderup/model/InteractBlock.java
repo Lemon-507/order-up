@@ -1,5 +1,8 @@
 package com.orderup.model;
 
+import lombok.Data;
+
+@Data
 public class InteractBlock {
     // 交互框坐标与尺寸
     private double x;
@@ -33,24 +36,6 @@ public class InteractBlock {
                 y = player.getY() + (Player.HEIGHT - HEIGHT) / 2;
             }
         }
-    }
-
-
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public void setY(double y) {
-        this.y = y;
     }
 
     // 判断本交互框 和目标矩形是否相交
