@@ -77,11 +77,24 @@ public class GameController {
         changeTileState();
         gameTimer.update(deltaSeconds);
     }
+//交互方块（Tile）
+    public void InteractTile(Tile tile,InteractBlock ib,GameMap gameMap, List<GameItem> items,Player player ){
+        if(ib.intersects(tile.getX(),tile.getY(),tile.TileSize,tile.TileSize)){
+            tile.Interact(ib,gameMap,items,player);
+        }
+    }
 
+
+  //  //交互Item
     public void InteractItem() {
         if (player.isHolding) {
             dropItem();
             return;
+        }
+        for (Tile[] row : gameMap.getTiles()) {
+            for (Tile tile : row) {
+                InteractTile(tile, interactBlock, gameMap, gameMap.getItems(), player);
+            }
         }
 
         for (GameItem item : gameMap.getItems()) {
@@ -101,8 +114,10 @@ public class GameController {
                 return;
             }
         }
-    }
 
+        return;
+    }
+//丢物品
     private void dropItem() {
         if (holdingItem != null) {
             holdingItem.setX((int) interactBlock.getX());
@@ -112,6 +127,7 @@ public class GameController {
         holdingItem = null;
         player.isHolding = false;
     }
+//刷新物品
 
     private void refreshItem() {
         if (holdingItem != null && holdingItem.isPicked) {

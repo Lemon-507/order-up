@@ -27,14 +27,15 @@ public class GameMap {
 
     //瓷砖Type
     public void setTiles(int x, int y, TileType typeI){
-        tiles[x][y].TileType=typeI;
+        tiles[x][y].tileType=typeI;
     }
     public void AddItem(int x, int y) {
         items.add(new GameItem(x, y));
     }
 
-    public void AddItem(GameItem item) {
+    public GameItem AddItem(GameItem item) {
         items.add(item);
+        return item;
     }
 
     public List<GameItem> getItems() {

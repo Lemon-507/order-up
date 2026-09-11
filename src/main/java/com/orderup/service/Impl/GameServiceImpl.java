@@ -1,6 +1,7 @@
 package com.orderup.service.Impl;
 
 import com.orderup.model.GameMap;
+import com.orderup.model.IngredientsBox;
 import com.orderup.model.MapName;
 import com.orderup.model.TileType;
 import com.orderup.service.GameService;
@@ -25,6 +26,7 @@ public class GameServiceImpl implements GameService {
             map.setTiles(i, 5, TileType.TABLE);
         }
         map.AddItem(130, 130);
-
+        IngredientsBox ig = new IngredientsBox(1, 0);
+        map.tiles[0][1] = ig;
     }
 }
