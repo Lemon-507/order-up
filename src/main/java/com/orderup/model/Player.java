@@ -11,6 +11,19 @@ public class Player {
     public static final double WIDTH = 40;
     public static final double HEIGHT = 40;
     private static final double DEFAULT_SPEED = 220;
+    public boolean isHolding = false;
+
+    private Direction direction = Direction.DOWN;
+
+    public Direction getDirection() {
+        return direction;
+    }
+
+    public void press0(Direction direction) {
+        press(direction);
+    }
+
+
 
   public final Set<Direction> pressedDirections = EnumSet.noneOf(Direction.class);
     public double x;
@@ -28,6 +41,7 @@ public class Player {
     }
 
     public void press(Direction direction) {
+        this.direction = direction; // 记录最后按下的方向
         pressedDirections.add(direction);
     }
 

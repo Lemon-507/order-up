@@ -2,6 +2,9 @@ package com.orderup.model;
 
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Data
 public class GameMap {
@@ -10,6 +13,7 @@ public class GameMap {
     private static int ROWS=9;
     private static int COLS=13;
     public Tile[][] tiles;
+    private final List<GameItem> items = new ArrayList<>();
     //初始化所有瓷砖
     public GameMap(MapName mapName1){
         tiles=new Tile[ROWS][COLS];
@@ -24,6 +28,17 @@ public class GameMap {
     //瓷砖Type
     public void setTiles(int x, int y, TileType typeI){
         tiles[x][y].TileType=typeI;
+    }
+    public void AddItem(int x, int y) {
+        items.add(new GameItem(x, y));
+    }
+
+    public void AddItem(GameItem item) {
+        items.add(item);
+    }
+
+    public List<GameItem> getItems() {
+        return items;
     }
 
     public Tile getTiles(int x, int y){
