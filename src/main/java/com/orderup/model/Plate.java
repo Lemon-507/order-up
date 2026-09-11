@@ -9,8 +9,8 @@ import java.util.List;
 /**
  * 保存已装入盘中的食材组合，用于形成菜肴并提交订单。
  * <p>
- * 盘子只提供领域方法：装盘校验、菜肴识别、送餐判定与计分、以及桌子占用约定。
- * 玩家拾取/手持移动、朝向检测和订单列表查找由调用方完成。
+ * 盘子只提供领域方法：装盘校验、菜肴识别、送餐判定与计分。
+ * 与桌子的放置、拾取由 {@link Table} 负责。
  */
 @Data
 public class Plate extends GameItem{
@@ -138,35 +138,6 @@ public class Plate extends GameItem{
         }
     }
 
-    /**
-     * 预留给尚未定义的桌子：桌上没有盘子时才可放置。
-     * 盘子不可堆叠，一张桌子最多一张盘子。
-     */
-    public boolean canPlaceOn(TableSurface table) {
-        return table != null && !table.hasPlate();
-    }
-
-    /**
-     * 将本盘子放到桌子上。桌上已有盘子时失败，不改变任何一方状态。
-     */
-    public boolean placeOn(TableSurface table) {
-        if (!canPlaceOn(table)) {
-            return false;
-        }
-        return table.placePlate(this);
-    }
-
-    /**
-     * 从桌子上取走盘子。桌上无盘时返回 {@code null}。
-     * 调用方负责确认玩家空手。
-     */
-    public static Plate takeFrom(TableSurface table) {
-        if (table == null || !table.hasPlate()) {
-            return null;
-        }
-        return table.takePlate();
-    }
-
     private int count(IngredientType type, IngredientStatus status) {
         int total = 0;
         for (Ingredient ingredient : contents) {
@@ -177,25 +148,5 @@ public class Plate extends GameItem{
             }
         }
         return total;
-    }
-
-    /**
-     * 桌子尚未实现时的占用约定。未来的桌子应实现该接口：
-     * 盘子不可堆叠，{@link #placePlate(Plate)} 在已占用时应返回 {@code false}。
-     */
-    public interface TableSurface {
-        boolean hasPlate();
-
-        Plate peekPlate();
-
-        /**
-         * @return 放置成功为 {@code true}；已有盘子（不可堆叠）为 {@code false}
-         */
-        boolean placePlate(Plate plate);
-
-        /**
-         * 取走桌上盘子；无盘时返回 {@code null}。
-         */
-        Plate takePlate();
     }
 }

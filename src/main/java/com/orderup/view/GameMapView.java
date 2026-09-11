@@ -22,7 +22,7 @@ public class GameMapView {
         int x = tile.getX();
         int y = tile.getY();
 
-        if (tile.getType() == TileType.WALL) {
+        if (tile.getType() == TileType.TABLE) {
             graphics.setFill(Color.BLACK);
             graphics.fillRect(x, y, tile.TileSize, tile.TileSize);
             graphics.setStroke(Color.DARKGRAY);
