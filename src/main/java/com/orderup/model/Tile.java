@@ -2,7 +2,7 @@ package com.orderup.model;
 
 import java.util.List;
 
-public class Tile {
+public class Tile{
       int rownumber;//行
       int colnumber;//列
       TileType tileType;

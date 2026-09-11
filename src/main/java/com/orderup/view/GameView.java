@@ -2,6 +2,7 @@ package com.orderup.view;
 
 import com.orderup.controller.GameController;
 import com.orderup.model.Direction;
+import com.orderup.model.GameState;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -248,7 +249,7 @@ public class GameView {
         disposed = true;
         stopGameLoop();
         if (controller != null) {
-            controller.stopGame();
+            controller.setState(GameState.FINISHED);
         }
     }
 }

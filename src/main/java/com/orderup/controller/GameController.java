@@ -1,14 +1,10 @@
 package com.orderup.controller;
 
-import com.orderup.model.Direction;
-import com.orderup.model.GameItem;
-import com.orderup.model.GameMap;
-import com.orderup.model.InteractBlock;
-import com.orderup.model.MapName;
-import com.orderup.model.Player;
-import com.orderup.model.Tile;
+import com.orderup.model.*;
+import com.orderup.service.GameService;
 import com.orderup.service.Impl.GameServiceImpl;
 import com.orderup.service.Impl.PlayerServiceImpl;
+import com.orderup.service.PlayerService;
 import com.orderup.util.GameTimer;
 
 import java.util.List;
@@ -20,8 +16,8 @@ public class GameController {
     private final Player player;
     private final InteractBlock interactBlock;
     private final GameMap gameMap;
-    private final GameServiceImpl gameService;
-    private final PlayerServiceImpl playerService;
+    private final GameService gameService;
+    private final PlayerService playerService;
     private final GameTimer gameTimer;
     private final double worldWidth;
     private final double worldHeight;
@@ -65,6 +61,32 @@ public class GameController {
 
     public void clearInput() {
         player.clearMovement();
+    }
+
+    public void setState(GameState gameState){
+       switch (gameState){
+           case READY, PAUSED -> {
+               finished = true;
+               gameTimer.stop();
+               player.clearMovement();
+           }
+           case RUNNING -> {
+               startGame();
+           }
+           case FINISHED -> {
+               finishGame();
+           }
+       }
+    }
+
+    public void finishGame(){
+        if (finished) {
+            return;
+        }
+        finished = true;
+        gameTimer.stop();
+        player.clearMovement();
+        onGameFinished.run();
     }
 
     public void update(double deltaSeconds) {
@@ -148,23 +170,6 @@ public class GameController {
                 );
             }
         }
-    }
-
-    public void finishGame() {
-        if (finished) {
-            return;
-        }
-
-        finished = true;
-        gameTimer.stop();
-        player.clearMovement();
-        onGameFinished.run();
-    }
-
-    public void stopGame() {
-        finished = true;
-        gameTimer.stop();
-        player.clearMovement();
     }
 
     public Player getPlayer() {

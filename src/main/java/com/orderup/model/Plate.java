@@ -18,6 +18,16 @@ public class Plate extends GameItem{
      * 盘内食材。使用 List 以允许同种食材重复放入。
      */
     private List<Ingredient> contents = new ArrayList<>();
+    /**
+     * 送餐完成后清空盘子，盘子仍由玩家持有。
+     */
+    private void clear() {
+        if (contents == null) {
+            contents = new ArrayList<>();
+        } else {
+            contents.clear();
+        }
+    }
 
     /**
      * 非 {@link IngredientStatus#RAW} 的食材可以装盘。
@@ -125,17 +135,6 @@ public class Plate extends GameItem{
         }
         clear();
         return true;
-    }
-
-    /**
-     * 送餐完成后清空盘子，盘子仍由玩家持有。
-     */
-    private void clear() {
-        if (contents == null) {
-            contents = new ArrayList<>();
-        } else {
-            contents.clear();
-        }
     }
 
     private int count(IngredientType type, IngredientStatus status) {

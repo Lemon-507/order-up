@@ -11,7 +11,7 @@ public class Table extends Tile {
 
     public Table(int x, int y) {
         super(x, y);
-        this.TileType = TileType.TABLE;
+        this.tileType = TileType.TABLE;
     }
 
     public boolean isVacant() {

@@ -19,12 +19,6 @@ public class Player {
         return direction;
     }
 
-    public void press0(Direction direction) {
-        press(direction);
-    }
-
-
-
   public final Set<Direction> pressedDirections = EnumSet.noneOf(Direction.class);
     public double x;
     public double y;
