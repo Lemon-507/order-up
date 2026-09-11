@@ -7,8 +7,8 @@ import java.util.Set;
  * 玩家位置、朝向、输入状态和手持物品。
  */
 public class Player {
-    public static final double WIDTH = 40;
-    public static final double HEIGHT = 40;
+    public static final double WIDTH = 60;
+    public static final double HEIGHT = 60;
     private static final double DEFAULT_SPEED = 220;
 
     private final Set<Direction> pressedDirections = EnumSet.noneOf(Direction.class);
