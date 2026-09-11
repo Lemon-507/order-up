@@ -13,10 +13,6 @@ public class StartController {
         startGame.run();
     }
 
-    public void onSettingsButtonClick() {
-        // TODO: Open the options screen here. This action intentionally has no side effects yet.
-    }
-
     public void onQuitButtonClick() {
         quitGame.run();
     }

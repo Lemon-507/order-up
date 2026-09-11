@@ -1,5 +1,6 @@
 package com.orderup.view;
 
+import com.orderup.config.GameConfig;
 import com.orderup.controller.GameController;
 import com.orderup.model.Direction;
 import com.orderup.model.GameState;
@@ -11,77 +12,49 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 
 /**
- * 游戏页面的 JavaFX 显示层，负责输入、逐帧刷新和画布绘制。
+ * 游戏页面的 JavaFX 显示层：接收输入、驱动主循环并绘制画面。
  */
 public class GameView {
-    // 游戏世界大小与一局游戏的持续时间。
-    private static final double WORLD_WIDTH = 1280;
-    private static final double WORLD_HEIGHT = 720;
-    private static final int GAME_SECONDS = 60;
-    private static final double FIXED_STEP_SECONDS = 1.0 / 300.0;
-    private static final double MAX_ACCUMULATED_SECONDS = 0.25;
-
-    // 由 game.fxml 注入：Canvas 绘制游戏内容，Label 显示剩余时间。
+    // FXML 只注入显示控件；游戏数据由 GameController 管理。
     @FXML
     private Canvas gameCanvas;
     @FXML
     private Label timeLabel;
 
-    // 不同游戏对象分别交给对应的 View 绘制。
     private final GameMapView gameMapView = new GameMapView();
-    private final InteractBlockView interactBlockView = new InteractBlockView();
+    private final InteractionAreaView interactionAreaView = new InteractionAreaView();
     private final GameItemView gameItemView = new GameItemView();
     private final PlayerView playerView = new PlayerView();
 
-    // 页面切换回调由 Launcher 设置，View 不直接负责切换场景。
+    // 场景切换由 Launcher 通过回调注入，View 不直接依赖 Launcher。
     private Runnable onGameFinished = () -> { };
     private GameController controller;
     private AnimationTimer gameLoop;
-
-    // 主循环运行过程中需要保存的显示层状态。
     private long lastTime;
     private double accumulatedSeconds;
     private int lastRenderedSeconds = -1;
     private boolean interactKeyPressed;
     private boolean disposed;
 
-
-
-
-    /**
-     * FXML 加载完成后自动调用：创建游戏、绑定输入、绘制首帧并启动主循环。
-     */
+    /** FXML 加载后创建一局游戏，绑定输入并启动主循环。 */
     @FXML
     private void initialize() {
-        controller = new GameController(
-                WORLD_WIDTH,
-                WORLD_HEIGHT,
-                GAME_SECONDS,
-                this::finishGame
-        );
+        controller = new GameController(this::finishGame);
         controller.startGame();
 
         configureInput();
         renderFrame(gameCanvas.getGraphicsContext2D());
         startGameLoop();
-
-        // 等页面真正显示后再获取焦点，否则 Canvas 可能接收不到键盘事件。
         Platform.runLater(gameCanvas::requestFocus);
     }
 
-    /**
-     * 接收 Launcher 提供的游戏结束回调。
-     */
     public void setOnGameFinished(Runnable onGameFinished) {
         this.onGameFinished = onGameFinished;
-        gameCanvas.requestFocus();
     }
 
-    /**
-     * 将键盘事件绑定到 Canvas；失去焦点时清空按键状态，防止角色持续移动。
-     */
     private void configureInput() {
         gameCanvas.setFocusTraversable(true);
         gameCanvas.setOnKeyPressed(this::onKeyPressed);
@@ -94,15 +67,12 @@ public class GameView {
         });
     }
 
-    /**
-     * 处理按键按下：E 键只触发一次交互，WASD 记录为持续移动方向。
-     */
     private void onKeyPressed(KeyEvent event) {
         if (event.getCode() == KeyCode.E) {
+            // 按住 E 时 JavaFX 会重复发送事件，这里限制为每次按下只交互一次。
             if (!interactKeyPressed) {
                 interactKeyPressed = true;
-                controller.InteractItem();
-
+                controller.interact();
             }
             event.consume();
             return;
@@ -115,9 +85,6 @@ public class GameView {
         }
     }
 
-    /**
-     * 处理按键松开，解除对应的移动或交互状态。
-     */
     private void onKeyReleased(KeyEvent event) {
         if (event.getCode() == KeyCode.E) {
             interactKeyPressed = false;
@@ -132,9 +99,6 @@ public class GameView {
         }
     }
 
-    /**
-     * 把 JavaFX 按键转换为与 JavaFX 无关的游戏方向。
-     */
     private Direction toDirection(KeyCode keyCode) {
         return switch (keyCode) {
             case W -> Direction.UP;
@@ -146,7 +110,7 @@ public class GameView {
     }
 
     /**
-     * 启动游戏主循环。JavaFX 每次刷新画面前都会调用 handle 方法。
+     * JavaFX 负责触发渲染；累加器保证游戏逻辑按固定 60 Hz 更新。
      */
     private void startGameLoop() {
         GraphicsContext graphics = gameCanvas.getGraphicsContext2D();
@@ -158,24 +122,20 @@ public class GameView {
                     return;
                 }
 
-                double elapsedSeconds =
-                        (now - lastTime) / 1_000_000_000.0;
-
+                double elapsedSeconds = (now - lastTime) / 1_000_000_000.0;
                 lastTime = now;
-
-                // 避免窗口卡顿后一次补算过多帧
                 accumulatedSeconds += Math.min(
                         elapsedSeconds,
-                        MAX_ACCUMULATED_SECONDS
+                        GameConfig.MAX_ACCUMULATED_SECONDS
                 );
 
-                // 游戏逻辑固定每 1/60 秒更新一次
-                while (accumulatedSeconds >= FIXED_STEP_SECONDS) {
-                    controller.update(FIXED_STEP_SECONDS);
-                    accumulatedSeconds -= FIXED_STEP_SECONDS;
+                while (!disposed
+                        && controller.getState() == GameState.RUNNING
+                        && accumulatedSeconds >= GameConfig.FIXED_STEP_SECONDS) {
+                    controller.update(GameConfig.FIXED_STEP_SECONDS);
+                    accumulatedSeconds -= GameConfig.FIXED_STEP_SECONDS;
                 }
 
-                // 按 JavaFX 实际刷新频率绘制
                 if (!disposed) {
                     renderFrame(graphics);
                 }
@@ -184,72 +144,42 @@ public class GameView {
         gameLoop.start();
     }
 
-    /**
-     * 绘制一帧：先清空旧画面，再按照地图、交互区、物品、玩家的顺序绘制。
-     */
     private void renderFrame(GraphicsContext graphics) {
+        // 绘制顺序即层级顺序：地图 -> 交互区 -> 物品 -> 玩家 -> HUD。
         graphics.clearRect(0, 0, gameCanvas.getWidth(), gameCanvas.getHeight());
         gameMapView.render(graphics, controller.getGameMap());
-        interactBlockView.render(graphics, controller.getInteractBlock());
-        gameItemView.render(graphics, controller.getItems());
+        interactionAreaView.render(graphics, controller.getInteractionArea());
+        gameItemView.render(graphics, controller.getGameMap().getItems());
         playerView.render(graphics, controller.getPlayer());
         renderTime(controller.getRemainingSeconds());
     }
 
-    /**
-     * 只在秒数变化时刷新计时器文本；最后 10 秒显示为红色。
-     */
     private void renderTime(int totalSeconds) {
         if (totalSeconds == lastRenderedSeconds) {
             return;
         }
         lastRenderedSeconds = totalSeconds;
-
-        int minutes = totalSeconds / 60;
-        int seconds = totalSeconds % 60;
-        timeLabel.setText(String.format("%02d:%02d", minutes, seconds));
-        timeLabel.setStyle(totalSeconds <= 10
-                ? timerStyle("red")
-                : timerStyle("white"));
+        timeLabel.setText(String.format("%02d:%02d", totalSeconds / 60, totalSeconds % 60));
+        timeLabel.setTextFill(totalSeconds <= 10 ? Color.RED : Color.WHITE);
     }
 
-    /**
-     * 生成倒计时标签的 JavaFX 内联样式。
-     */
-    private String timerStyle(String textColor) {
-        return "-fx-font-size: 48px;"
-                + "-fx-font-weight: bold;"
-                + "-fx-text-fill: " + textColor + ";"
-                + "-fx-background-color: rgba(0,0,0,0.55);"
-                + "-fx-padding: 8 18;"
-                + "-fx-background-radius: 10;";
-    }
-
-    /**
-     * 游戏时间结束：停止逐帧刷新并通知 Launcher 切换到结算页面。
-     */
     private void finishGame() {
         stopGameLoop();
         onGameFinished.run();
     }
 
-    /**
-     * 停止 JavaFX 主循环。
-     */
     private void stopGameLoop() {
         if (gameLoop != null) {
             gameLoop.stop();
         }
     }
 
-    /**
-     * 离开游戏页面时释放循环和控制器状态，避免旧页面继续运行。
-     */
     public void dispose() {
+        // 换页时同时停止 JavaFX 循环和业务状态，避免旧页面继续更新。
         disposed = true;
         stopGameLoop();
         if (controller != null) {
-            controller.setState(GameState.FINISHED);
+            controller.stopGame();
         }
     }
 }

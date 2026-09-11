@@ -9,11 +9,11 @@ public class ResultController {
         this.returnToMenu = returnToMenu;
     }
 
-    public void restartGame() {
+    public void onRestartButtonClick() {
         restartGame.run();
     }
 
-    public void returnToMenu() {
+    public void onMenuButtonClick() {
         returnToMenu.run();
     }
 }

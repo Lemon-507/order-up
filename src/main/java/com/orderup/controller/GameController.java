@@ -1,54 +1,67 @@
 package com.orderup.controller;
 
-import com.orderup.model.*;
+import com.orderup.config.GameConfig;
+import com.orderup.model.Direction;
+import com.orderup.model.GameMap;
+import com.orderup.model.GameState;
+import com.orderup.model.InteractionArea;
+import com.orderup.model.InteractionResult;
+import com.orderup.model.Player;
+import com.orderup.model.Tile;
 import com.orderup.service.GameService;
-import com.orderup.service.Impl.GameServiceImpl;
-import com.orderup.service.Impl.PlayerServiceImpl;
+import com.orderup.service.KitchenService;
 import com.orderup.service.PlayerService;
 import com.orderup.util.GameTimer;
 
-import java.util.List;
-
 /**
- * 游戏页面的状态协调器，只负责输入、更新和结束条件。
+ * 编排一局游戏，不包含 JavaFX 显示代码。
  */
 public class GameController {
     private final Player player;
-    private final InteractBlock interactBlock;
+    private final InteractionArea interactionArea;
     private final GameMap gameMap;
-    private final GameService gameService;
     private final PlayerService playerService;
+    private final KitchenService kitchenService;
     private final GameTimer gameTimer;
-    private final double worldWidth;
-    private final double worldHeight;
-    private final int gameSeconds;
     private final Runnable onGameFinished;
-    private GameItem holdingItem;
-    private boolean finished;
 
-    public GameController(
-            double worldWidth,
-            double worldHeight,
-            int gameSeconds,
-            Runnable onGameFinished
-    ) {
-        this.worldWidth = worldWidth;
-        this.worldHeight = worldHeight;
-        this.gameSeconds = gameSeconds;
+    private GameState state = GameState.READY;
+
+    public GameController(Runnable onGameFinished) {
         this.onGameFinished = onGameFinished;
-        this.player = new Player(200, 200);
-        this.interactBlock = new InteractBlock();
-        this.gameMap = new GameMap(MapName.map1);
-        this.gameService = new GameServiceImpl();
-        this.playerService = new PlayerServiceImpl();
-        this.gameTimer = new GameTimer(this::finishGame);
-        gameService.LoadMap(gameMap);
-        interactBlock.moveInteractBlock(player);
+
+        GameService gameService = new GameService();
+        playerService = new PlayerService();
+        kitchenService = new KitchenService();
+
+        player = new Player(GameConfig.PLAYER_START_X, GameConfig.PLAYER_START_Y);
+        interactionArea = new InteractionArea();
+        gameMap = gameService.createMap();
+        gameTimer = new GameTimer(this::finishGame);
+        interactionArea.updateFrom(player);
     }
 
     public void startGame() {
-        finished = false;
-        gameTimer.startCountDown(gameSeconds);
+        state = GameState.RUNNING;
+        gameTimer.start(GameConfig.GAME_SECONDS);
+    }
+
+    public void update(double deltaSeconds) {
+        if (state != GameState.RUNNING) {
+            return;
+        }
+
+        playerService.move(
+                player,
+                deltaSeconds,
+                GameConfig.WINDOW_WIDTH,
+                GameConfig.WINDOW_HEIGHT,
+                gameMap
+        );
+        interactionArea.updateFrom(player);
+        kitchenService.updateHeldItem(player, interactionArea);
+        updateInteractableTiles();
+        gameTimer.update(deltaSeconds);
     }
 
     public void press(Direction direction) {
@@ -60,114 +73,39 @@ public class GameController {
     }
 
     public void clearInput() {
-        player.clearMovement();
+        player.clearInput();
     }
 
-    public void setState(GameState gameState){
-       switch (gameState){
-           case READY, PAUSED -> {
-               finished = true;
-               gameTimer.stop();
-               player.clearMovement();
-           }
-           case RUNNING -> {
-               startGame();
-           }
-           case FINISHED -> {
-               finishGame();
-           }
-       }
+    public InteractionResult interact() {
+        if (state != GameState.RUNNING) {
+            return InteractionResult.failed("游戏未运行");
+        }
+        return kitchenService.interact(player, interactionArea, gameMap);
     }
 
-    public void finishGame(){
-        if (finished) {
+    public void finishGame() {
+        if (state == GameState.FINISHED) {
             return;
         }
-        finished = true;
-        gameTimer.stop();
-        player.clearMovement();
+        stopGame();
         onGameFinished.run();
     }
 
-    public void update(double deltaSeconds) {
-        if (finished) {
-            return;
-        }
-        playerService.move(player, deltaSeconds, worldWidth, worldHeight, gameMap);
-        interactBlock.moveInteractBlock(player);
-        refreshItem();
-        changeTileState();
-        gameTimer.update(deltaSeconds);
-    }
-//交互方块（Tile）
-    public void InteractTile(Tile tile,InteractBlock ib,GameMap gameMap, List<GameItem> items,Player player ){
-        if(ib.intersects(tile.getX(),tile.getY(),tile.TileSize,tile.TileSize)){
-            tile.Interact(ib,gameMap,items,player);
-        }
+    public void stopGame() {
+        state = GameState.FINISHED;
+        gameTimer.stop();
+        player.clearInput();
     }
 
-
-  //  //交互Item
-    public void InteractItem() {
-        if (player.isHolding) {
-            dropItem();
-            return;
-        }
+    private void updateInteractableTiles() {
         for (Tile[] row : gameMap.getTiles()) {
             for (Tile tile : row) {
-                InteractTile(tile, interactBlock, gameMap, gameMap.getItems(), player);
-            }
-        }
-
-        for (GameItem item : gameMap.getItems()) {
-            if (item.isPicked) {
-                continue;
-            }
-            if (interactBlock.intersects(
-                    item.getX(),
-                    item.getY(),
-                    item.getWidth(),
-                    item.getHeight()
-            )) {
-                holdingItem = item;
-                player.isHolding = true;
-                holdingItem.isPicked = true;
-                refreshItem();
-                return;
-            }
-        }
-
-        return;
-    }
-//丢物品
-    private void dropItem() {
-        if (holdingItem != null) {
-            holdingItem.setX((int) interactBlock.getX());
-            holdingItem.setY((int) interactBlock.getY());
-            holdingItem.isPicked = false;
-        }
-        holdingItem = null;
-        player.isHolding = false;
-    }
-//刷新物品
-
-    private void refreshItem() {
-        if (holdingItem != null && holdingItem.isPicked) {
-            holdingItem.setX((int) interactBlock.getX());
-            holdingItem.setY((int) interactBlock.getY());
-        }
-    }
-
-    private void changeTileState() {
-        for (int row = 0; row < 9; row++) {
-            for (int column = 0; column < 13; column++) {
-                Tile tile = gameMap.tiles[row][column];
-                tile.Interactable = interactBlock.intersects(
+                tile.setInteractable(interactionArea.intersects(
                         tile.getX(),
                         tile.getY(),
-                        tile.TileSize,
-                        tile.TileSize
-                );
+                        tile.getSize(),
+                        tile.getSize()
+                ));
             }
         }
     }
@@ -176,24 +114,20 @@ public class GameController {
         return player;
     }
 
-    public InteractBlock getInteractBlock() {
-        return interactBlock;
+    public InteractionArea getInteractionArea() {
+        return interactionArea;
     }
 
     public GameMap getGameMap() {
         return gameMap;
     }
 
-    public List<GameItem> getItems() {
-        return gameMap.getItems();
-    }
-
     public int getRemainingSeconds() {
-        return gameTimer.getSecondsCount();
+        return gameTimer.getRemainingSeconds();
     }
 
-    public void AddItem(GameItem item) {
-        gameMap.AddItem(item);
+    public GameState getState() {
+        return state;
     }
 
 }

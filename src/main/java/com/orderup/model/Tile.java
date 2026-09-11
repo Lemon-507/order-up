@@ -1,32 +1,55 @@
 package com.orderup.model;
 
-import java.util.List;
+import com.orderup.config.GameConfig;
 
-public class Tile{
-      int rownumber;//行
-      int colnumber;//列
-      TileType tileType;
-      public boolean Interactable=false;//是否可交互
+/**
+ * 地图中的一个不可拾取格子。
+ */
+public class Tile {
+    private final int row;
+    private final int column;
+    private final TileType type;
+    private boolean interactable;
 
-      public int TileSize=80;
+    public Tile(int row, int column) {
+        this(row, column, TileType.FLOOR);
+    }
 
-      Tile(int x, int y){
-          rownumber=y;
-          colnumber=x;
-          tileType= com.orderup.model.TileType.FLOOR;
-      }
-      public void Interact(InteractBlock ib,GameMap gameMap, List<GameItem> items,Player player){
+    public Tile(int row, int column, TileType type) {
+        this.row = row;
+        this.column = column;
+        this.type = type;
+    }
 
-      }
+    public int getX() {
+        return column * GameConfig.TILE_SIZE;
+    }
 
-      public int getX() {
-          return colnumber*TileSize;
-      }
-      public int getY() {
-          return rownumber*TileSize;
-      }
+    public int getY() {
+        return row * GameConfig.TILE_SIZE;
+    }
+
+    public int getSize() {
+        return GameConfig.TILE_SIZE;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public int getColumn() {
+        return column;
+    }
 
     public TileType getType() {
-        return tileType;
+        return type;
+    }
+
+    public boolean isInteractable() {
+        return interactable;
+    }
+
+    public void setInteractable(boolean interactable) {
+        this.interactable = interactable;
     }
 }

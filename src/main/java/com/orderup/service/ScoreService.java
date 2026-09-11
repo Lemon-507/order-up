@@ -2,26 +2,28 @@ package com.orderup.service;
 
 import com.orderup.model.Order;
 import com.orderup.model.OrderResult;
+import com.orderup.model.OrderStatus;
 
-public interface ScoreService {
-    /**
-     * 计算成功奖励
-     * @param order
-     * @return 奖励
-     */
-    int calculateSuccessScore(Order order);
+/**
+ * 统一计算订单基础分、小费和失败扣分。
+ */
+public class ScoreService {
+    public int calculateSuccessScore(Order order) {
+        return order == null ? 0 : order.getRecipe().getBaseScore();
+    }
 
-    /**
-     * 计算小费
-     * @param order
-     * @return 小费
-     */
-    int calculateTip(Order order);
+    public int calculateTip(Order order) {
+        if (order == null || order.getStatus() != OrderStatus.ACTIVE) {
+            return 0;
+        }
+        double timeRatio = order.getRemainingSeconds() / order.getRecipe().getTimeLimitSeconds();
+        return (int) Math.round(order.getRecipe().getBaseScore() * 0.5 * timeRatio);
+    }
 
-    /**
-     * 计算罚金
-     * @param result
-     * @return 罚金
-     */
-    int calculatePenalty(OrderResult result);
+    public int calculatePenalty(OrderResult result) {
+        if (result == null || result.success()) {
+            return 0;
+        }
+        return result.expired() ? 20 : 10;
+    }
 }

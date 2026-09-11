@@ -1,14 +1,35 @@
 package com.orderup.model;
 
-import lombok.Data;
-
 /**
- * 表示食材类型、当前加工状态和加工进度。
+ * 可加工的食材。
  */
-@Data
 public class Ingredient extends GameItem {
-    private IngredientType ingredientType;
-    private IngredientStatus processStatus;
+    private final IngredientType type;
+    private IngredientStatus status = IngredientStatus.RAW;
     private double processProgress;
 
+    public Ingredient(IngredientType type, double x, double y) {
+        super(x, y);
+        this.type = type;
+    }
+
+    public IngredientType getType() {
+        return type;
+    }
+
+    public IngredientStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(IngredientStatus status) {
+        this.status = status;
+    }
+
+    public double getProcessProgress() {
+        return processProgress;
+    }
+
+    public void setProcessProgress(double processProgress) {
+        this.processProgress = processProgress;
+    }
 }
