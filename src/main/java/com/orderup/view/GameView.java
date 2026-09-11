@@ -75,6 +75,7 @@ public class GameView {
             if (!interactKeyPressed) {
                 interactKeyPressed = true;
                 controller.InteractItem();
+
             }
             event.consume();
             return;
