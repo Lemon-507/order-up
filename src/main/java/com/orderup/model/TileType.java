@@ -8,6 +8,6 @@ public enum TileType {
     BLENDER,//搅拌机
     SERVING_COUNTER,//服务台
     TRASH_BIN, //垃圾桶
-    WALL,//墙
-    FLOOR//地板
+    TABLE,//桌子
+    FLOOR,//地板
 }

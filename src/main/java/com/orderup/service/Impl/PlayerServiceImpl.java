@@ -38,7 +38,7 @@ public class PlayerServiceImpl implements PlayerService {
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 13; j++) {
                 Tile tile = gameMap.getTiles(i, j);
-                if (tile.getType() != TileType.WALL) {
+                if (tile.getType() != TileType.TABLE) {
                     continue;
                 }
 
