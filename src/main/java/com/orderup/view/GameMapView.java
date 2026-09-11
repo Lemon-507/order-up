@@ -22,7 +22,7 @@ public class GameMapView {
         int x = tile.getX();
         int y = tile.getY();
 
-        if (tile.getType() == TileType.WALL) {
+        if (tile.getType() == TileType.TABLE) {
             if(!tile.Interactable){
             graphics.setFill(Color.BLACK);
             }
