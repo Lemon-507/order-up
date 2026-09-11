@@ -19,9 +19,8 @@ public class GameView {
     private static final double WORLD_WIDTH = 1280;
     private static final double WORLD_HEIGHT = 720;
     private static final int GAME_SECONDS = 60;
-
-    // 限制单帧参与逻辑计算的最大时间，避免程序卡顿后玩家瞬间移动过远。
-    private static final double MAX_FRAME_SECONDS = 0.05;
+    private static final double FIXED_STEP_SECONDS = 1.0 / 300.0;
+    private static final double MAX_ACCUMULATED_SECONDS = 0.25;
 
     // 由 game.fxml 注入：Canvas 绘制游戏内容，Label 显示剩余时间。
     @FXML
@@ -42,9 +41,13 @@ public class GameView {
 
     // 主循环运行过程中需要保存的显示层状态。
     private long lastTime;
+    private double accumulatedSeconds;
     private int lastRenderedSeconds = -1;
     private boolean interactKeyPressed;
     private boolean disposed;
+
+
+
 
     /**
      * FXML 加载完成后自动调用：创建游戏、绑定输入、绘制首帧并启动主循环。
@@ -148,15 +151,29 @@ public class GameView {
         gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                // now 的单位是纳秒，换算成距上一帧经过的秒数。
-                // 第一帧没有上一帧时间，因此 deltaSeconds 使用 0。
-                double deltaSeconds = lastTime == 0
-                        ? 0
-                        : Math.min((now - lastTime) / 1_000_000_000.0, MAX_FRAME_SECONDS);
+                if (lastTime == 0) {
+                    lastTime = now;
+                    return;
+                }
+
+                double elapsedSeconds =
+                        (now - lastTime) / 1_000_000_000.0;
+
                 lastTime = now;
 
-                // 每帧先更新游戏数据，再根据最新数据绘制画面。
-                controller.update(deltaSeconds);
+                // 避免窗口卡顿后一次补算过多帧
+                accumulatedSeconds += Math.min(
+                        elapsedSeconds,
+                        MAX_ACCUMULATED_SECONDS
+                );
+
+                // 游戏逻辑固定每 1/60 秒更新一次
+                while (accumulatedSeconds >= FIXED_STEP_SECONDS) {
+                    controller.update(FIXED_STEP_SECONDS);
+                    accumulatedSeconds -= FIXED_STEP_SECONDS;
+                }
+
+                // 按 JavaFX 实际刷新频率绘制
                 if (!disposed) {
                     renderFrame(graphics);
                 }
