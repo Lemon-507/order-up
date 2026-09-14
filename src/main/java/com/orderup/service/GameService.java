@@ -36,9 +36,20 @@ public interface GameService {
             placeTable(map, 0, column);
             placeTable(map, GameConfig.MAP_ROWS - 1, column);
         }
-        for (int row = 3; row < 5; row++) {
-            placeTable(map, row, 5);
-        }
+        placeTable(map, 3, 3);
+        placeTable(map, 3, 4);
+        placeTable(map, 3, 8);
+        placeTable(map, 3, 9);
+
+        // 装饰台仍阻挡移动，但不作为可放置物品的普通桌面。
+        placeDecoration(map, 0, 1, TileVisual.SQUARE_PLANTER);
+        placeDecoration(map, 0, 2, TileVisual.ROUND_PLANTER);
+        placeDecoration(map, 0, 10, TileVisual.ROUND_PLANTER);
+        placeDecoration(map, 0, 11, TileVisual.SQUARE_PLANTER);
+        placeDecoration(map, 8, 3, TileVisual.SQUARE_PLANTER);
+        placeDecoration(map, 8, 6, TileVisual.SQUARE_PLANTER);
+        placeTable(map, 8, 4, TileVisual.CASHIER_COUNTER_LEFT);
+        placeTable(map, 8, 5, TileVisual.CASHIER_COUNTER_RIGHT);
 
         for (GameConfig.IngredientSourceConfig source : GameConfig.getIngredientSources(level)) {
             map.setTile(
@@ -70,6 +81,14 @@ public interface GameService {
         map.setTile(row, column, new Table(row, column));
     }
 
+    default void placeTable(GameMap map, int row, int column, TileVisual visual) {
+        map.setTile(row, column, new Table(row, column, visual));
+    }
+
+    default void placeDecoration(GameMap map, int row, int column, TileVisual visual) {
+        map.setTile(row, column, new Tile(row, column, TileType.TABLE, visual));
+    }
+
     /** 创建配置指定的普通设施或加工设施。 */
     default Tile createFacility(GameConfig.FacilityConfig facility) {
         return switch (facility.tileType()) {
@@ -78,7 +97,12 @@ public interface GameService {
                     facility.column(),
                     facility.tileType()
             );
-            default -> new Tile(facility.row(), facility.column(), facility.tileType());
+            default -> new Tile(
+                    facility.row(),
+                    facility.column(),
+                    facility.tileType(),
+                    facility.tileVisual()
+            );
         };
     }
 
@@ -86,10 +110,12 @@ public interface GameService {
     default Plate addEmptyPlate(GameMap map) {
         for (int slot = 0; slot < GameConfig.PLATE_COUNT; slot++) {
             Plate plate = new Plate();
-            double x = (GameConfig.PLATE_RETURN_START_COLUMN + slot) * GameConfig.TILE_SIZE
-                    + (GameConfig.TILE_SIZE - plate.getWidth()) / 2.0;
+            double x = GameConfig.PLATE_RETURN_START_COLUMN * GameConfig.TILE_SIZE
+                    + (GameConfig.TILE_SIZE - plate.getWidth()) / 2.0
+                    + (slot - 1) * 5;
             double y = GameConfig.PLATE_RETURN_ROW * GameConfig.TILE_SIZE
-                    + (GameConfig.TILE_SIZE - plate.getHeight()) / 2.0;
+                    + (GameConfig.TILE_SIZE - plate.getHeight()) / 2.0
+                    + slot * 2;
             boolean occupied = map.getItems().stream()
                     .filter(Plate.class::isInstance)
                     .anyMatch(item -> item.getX() == x && item.getY() == y);

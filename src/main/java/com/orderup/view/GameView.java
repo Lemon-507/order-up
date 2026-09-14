@@ -4,6 +4,7 @@ import com.orderup.config.GameConfig;
 import com.orderup.controller.GameController;
 import com.orderup.model.Direction;
 import com.orderup.model.GameState;
+import com.orderup.model.GameResult;
 import com.orderup.model.InteractionResult;
 import com.orderup.model.Order;
 import javafx.animation.AnimationTimer;
@@ -22,6 +23,7 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * 游戏页面的 JavaFX 显示层：接收输入、驱动主循环并绘制画面。
@@ -44,6 +46,8 @@ public class GameView {
     private StackPane pauseOverlay;
     @FXML
     private Button continueButton;
+    @FXML
+    private Button musicToggleButton;
 
     private final GameMapView gameMapView = new GameMapView();
     private final InteractionAreaView interactionAreaView = new InteractionAreaView();
@@ -51,9 +55,11 @@ public class GameView {
     private final PlayerView playerView = new PlayerView();
 
     // 场景切换由 Launcher 通过回调注入，View 不直接依赖 Launcher。
-    private Runnable onGameFinished = () -> { };
+    private Consumer<GameResult> onGameFinished = result -> { };
     private Runnable returnToMenu = () -> { };
     private Runnable returnToLevelSelect = () -> { };
+    private Consumer<Boolean> changeSound = enabled -> { };
+    private boolean soundEnabled;
     private GameController controller;
     private AnimationTimer gameLoop;
     private long lastTime;
@@ -72,12 +78,16 @@ public class GameView {
      * @param onGameFinished 游戏结束后切换页面的回调
      * @param returnToMenu 返回主菜单的回调
      * @param returnToLevelSelect 返回关卡选择页的回调
+     * @param soundEnabled 当前音乐开关状态
+     * @param changeSound 切换音乐开关的回调
      */
     public void configure(
             int level,
-            Runnable onGameFinished,
+            Consumer<GameResult> onGameFinished,
             Runnable returnToMenu,
-            Runnable returnToLevelSelect
+            Runnable returnToLevelSelect,
+            boolean soundEnabled,
+            Consumer<Boolean> changeSound
     ) {
         if (controller != null) {
             throw new IllegalStateException("GameView 已经配置过");
@@ -85,6 +95,9 @@ public class GameView {
         this.onGameFinished = onGameFinished;
         this.returnToMenu = returnToMenu;
         this.returnToLevelSelect = returnToLevelSelect;
+        this.soundEnabled = soundEnabled;
+        this.changeSound = changeSound;
+        updateMusicButton();
         controller = new GameController(level, this::finishGame);
         controller.startGame();
 
@@ -224,6 +237,23 @@ public class GameView {
     }
 
     @FXML
+    private void onMusicToggleButtonClick() {
+        soundEnabled = !soundEnabled;
+        changeSound.accept(soundEnabled);
+        updateMusicButton();
+        Platform.runLater(gameCanvas::requestFocus);
+    }
+
+    private void updateMusicButton() {
+        musicToggleButton.setText(soundEnabled ? "♫" : "×");
+        musicToggleButton.setAccessibleText(soundEnabled ? "关闭音乐" : "开启音乐");
+        musicToggleButton.getStyleClass().remove("muted");
+        if (!soundEnabled) {
+            musicToggleButton.getStyleClass().add("muted");
+        }
+    }
+
+    @FXML
     private void onMenuButtonClick() {
         returnToMenu.run();
     }
@@ -346,7 +376,7 @@ public class GameView {
 
     private void finishGame() {
         stopGameLoop();
-        onGameFinished.run();
+        onGameFinished.accept(controller.getResult());
     }
 
     private void stopGameLoop() {

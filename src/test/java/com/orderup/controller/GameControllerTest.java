@@ -52,8 +52,8 @@ class GameControllerTest {
         fish.setStatus(IngredientStatus.CUT);
         plate.addIngredient(fish);
 
-        controller.getPlayer().setPosition(410, 580);
-        controller.getPlayer().press(Direction.DOWN);
+        controller.getPlayer().setPosition(900, 170);
+        controller.getPlayer().press(Direction.RIGHT);
         controller.getPlayer().clearInput();
         controller.update(0);
         controller.getPlayer().pickUp(plate);
@@ -80,14 +80,16 @@ class GameControllerTest {
                 .map(Plate.class::cast)
                 .filter(candidate -> candidate.getX()
                         == GameConfig.PLATE_RETURN_START_COLUMN * GameConfig.TILE_SIZE
-                        + (GameConfig.TILE_SIZE - candidate.getWidth()) / 2.0)
+                        + (GameConfig.TILE_SIZE - candidate.getWidth()) / 2.0
+                        - 5)
                 .findFirst()
                 .orElseThrow();
         assertEquals(GameConfig.PLATE_COUNT, countPlates(controller));
         assertTrue(returnedPlate.isEmpty());
         assertEquals(
                 GameConfig.PLATE_RETURN_START_COLUMN * GameConfig.TILE_SIZE
-                        + (GameConfig.TILE_SIZE - returnedPlate.getWidth()) / 2.0,
+                        + (GameConfig.TILE_SIZE - returnedPlate.getWidth()) / 2.0
+                        - 5,
                 returnedPlate.getX()
         );
         assertEquals(
@@ -101,8 +103,8 @@ class GameControllerTest {
     void submittedPlatesRespawnOnIndependentTimers() {
         GameController controller = new GameController(1, () -> { });
         controller.startGame();
-        controller.getPlayer().setPosition(410, 580);
-        controller.getPlayer().press(Direction.DOWN);
+        controller.getPlayer().setPosition(900, 170);
+        controller.getPlayer().press(Direction.RIGHT);
         controller.getPlayer().clearInput();
         controller.update(0);
         List<Plate> plates = controller.getGameMap().getItems().stream()
