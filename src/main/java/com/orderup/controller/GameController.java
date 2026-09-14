@@ -28,6 +28,7 @@ public class GameController {
     private final Runnable onGameFinished;
 
     private GameState state = GameState.READY;
+    private boolean interacting;
 
     /**
      * 按默认关卡创建一局新游戏。
@@ -68,7 +69,7 @@ public class GameController {
 
     /**
      * 更新一次游戏逻辑：移动玩家、同步交互区和手持物品、
-     * 刷新可交互格子，最后推进倒计时。
+     * 推进加工设施、刷新可交互格子，最后推进倒计时。
      *
      * @param deltaSeconds 本次逻辑更新要推进的秒数
      */
@@ -85,6 +86,12 @@ public class GameController {
         );
         interactionArea.updateFrom(player);
         kitchenService.updateHeldItem(player, interactionArea);
+        kitchenService.updateProcessing(
+                interactionArea,
+                gameMap,
+                interacting,
+                deltaSeconds
+        );
         updateInteractableTiles();
         gameTimer.update(deltaSeconds);
     }
@@ -112,13 +119,21 @@ public class GameController {
      */
     public void clearInput() {
         player.clearInput();
+        interacting = false;
+    }
+
+    /**
+     * 记录玩家是否持续按住交互键，供切菜板累计加工时间。
+     */
+    public void setInteracting(boolean interacting) {
+        this.interacting = interacting;
     }
 
     /** 暂停游戏逻辑和倒计时推进。 */
     public void pauseGame() {
         if (state == GameState.RUNNING) {
             state = GameState.PAUSED;
-            player.clearInput();
+            clearInput();
         }
     }
 
@@ -158,7 +173,7 @@ public class GameController {
     public void stopGame() {
         state = GameState.FINISHED;
         gameTimer.stop();
-        player.clearInput();
+        clearInput();
     }
 
     /**

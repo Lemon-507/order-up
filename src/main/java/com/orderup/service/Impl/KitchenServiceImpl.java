@@ -5,15 +5,19 @@ import com.orderup.model.GameItem;
 import com.orderup.model.GameMap;
 import com.orderup.model.Ingredient;
 import com.orderup.model.IngredientSource;
+import com.orderup.model.IngredientStatus;
+import com.orderup.model.IngredientType;
 import com.orderup.model.InteractionArea;
 import com.orderup.model.InteractionResult;
 import com.orderup.model.Plate;
 import com.orderup.model.Player;
+import com.orderup.model.ProcessingStation;
 import com.orderup.model.Table;
 import com.orderup.model.Tile;
+import com.orderup.model.TileType;
 
 /**
- * 处理拾取、放下、食材来源和桌面装盘。
+ * 处理拾取、放下、食材来源、加工设施和桌面装盘。
  */
 public class KitchenServiceImpl implements com.orderup.service.KitchenService {
     /** {@inheritDoc} */
@@ -21,6 +25,9 @@ public class KitchenServiceImpl implements com.orderup.service.KitchenService {
     public InteractionResult interact(Player player, InteractionArea area, GameMap map) {
         Tile tile = findTile(area, map);
 
+        if (tile instanceof ProcessingStation station) {
+            return interactWithStation(player, station);
+        }
         if (player.hasHeldItem()) {
             return placeOrDrop(player, area, map, tile);
         }
@@ -39,6 +46,105 @@ public class KitchenServiceImpl implements com.orderup.service.KitchenService {
             return takeIngredientFromSource(player, area, map, source);
         }
         return InteractionResult.failed("附近没有可交互物品");
+    }
+
+    /**
+     * 向加工设施放入原料，或取回已经加工完成的食材。
+     */
+    private InteractionResult interactWithStation(Player player, ProcessingStation station) {
+        if (player.hasHeldItem()) {
+            return placeIngredientOnStation(player, station);
+        }
+
+        Ingredient ingredient = station.getIngredient();
+        if (ingredient == null) {
+            return InteractionResult.failed("设施中没有食材");
+        }
+        if (ingredient.getStatus() == IngredientStatus.RAW) {
+            return station.getType() == TileType.CHOPPING_BOARD
+                    ? InteractionResult.ok("请持续按住 E 切鱼")
+                    : InteractionResult.failed("米饭还在烹煮");
+        }
+
+        player.pickUp(station.take());
+        return InteractionResult.ok("取出加工完成的食材");
+    }
+
+    private InteractionResult placeIngredientOnStation(
+            Player player,
+            ProcessingStation station
+    ) {
+        if (!station.isEmpty()) {
+            return InteractionResult.failed("该设施正在使用");
+        }
+        if (!(player.getHeldItem() instanceof Ingredient ingredient)) {
+            return InteractionResult.failed("该设施只能加工食材");
+        }
+
+        boolean acceptsIngredient = station.getType() == TileType.CHOPPING_BOARD
+                ? ingredient.getType() == IngredientType.FISH
+                : ingredient.getType() == IngredientType.RICE;
+        if (!acceptsIngredient || ingredient.getStatus() != IngredientStatus.RAW) {
+            return InteractionResult.failed(station.getType() == TileType.CHOPPING_BOARD
+                    ? "切菜板只能放置生鱼"
+                    : "电饭煲只能放置生米");
+        }
+
+        station.place(ingredient);
+        player.releaseHeldItem();
+        return InteractionResult.ok(station.getType() == TileType.CHOPPING_BOARD
+                ? "生鱼已放上切菜板，请持续按住 E"
+                : "生米已放入电饭煲");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void updateProcessing(
+            InteractionArea area,
+            GameMap map,
+            boolean interacting,
+            double deltaSeconds
+    ) {
+        if (deltaSeconds < 0) {
+            throw new IllegalArgumentException("Delta seconds cannot be negative.");
+        }
+
+        Tile activeTile = interacting ? findTile(area, map) : null;
+        for (Tile[] row : map.getTiles()) {
+            for (Tile tile : row) {
+                if (tile instanceof ProcessingStation station) {
+                    updateStation(station, activeTile == station, deltaSeconds);
+                }
+            }
+        }
+    }
+
+    private void updateStation(
+            ProcessingStation station,
+            boolean activelyInteracting,
+            double deltaSeconds
+    ) {
+        Ingredient ingredient = station.getIngredient();
+        if (ingredient == null || ingredient.getStatus() != IngredientStatus.RAW) {
+            return;
+        }
+
+        if (station.getType() == TileType.RICE_COOKER) {
+            station.advance(deltaSeconds);
+            if (station.getProgressSeconds() >= GameConfig.RICE_COOKING_SECONDS) {
+                ingredient.setStatus(IngredientStatus.COOKED);
+            }
+            return;
+        }
+
+        if (!activelyInteracting) {
+            station.resetProgress();
+            return;
+        }
+        station.advance(deltaSeconds);
+        if (station.getProgressSeconds() >= GameConfig.CHOPPING_SECONDS) {
+            ingredient.setStatus(IngredientStatus.CUT);
+        }
     }
 
     /** {@inheritDoc} */

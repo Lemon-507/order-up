@@ -4,7 +4,9 @@ import com.orderup.model.GameMap;
 import com.orderup.model.IngredientSource;
 import com.orderup.model.IngredientType;
 import com.orderup.model.Plate;
+import com.orderup.model.ProcessingStation;
 import com.orderup.model.Table;
+import com.orderup.model.TileType;
 import com.orderup.service.Impl.GameServiceImpl;
 import org.junit.jupiter.api.Test;
 
@@ -29,6 +31,16 @@ class GameServiceTest {
         );
         assertEquals(IngredientType.RICE, riceSource.getIngredientType());
         assertInstanceOf(Table.class, map.getTile(4, 5));
+        ProcessingStation choppingBoard = assertInstanceOf(
+                ProcessingStation.class,
+                map.getTile(3, 6)
+        );
+        ProcessingStation riceCooker = assertInstanceOf(
+                ProcessingStation.class,
+                map.getTile(4, 6)
+        );
+        assertEquals(TileType.CHOPPING_BOARD, choppingBoard.getType());
+        assertEquals(TileType.RICE_COOKER, riceCooker.getType());
         assertInstanceOf(Plate.class, map.getItems().get(0));
     }
 

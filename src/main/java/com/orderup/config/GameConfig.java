@@ -5,6 +5,7 @@ import com.orderup.model.Ingredient;
 import com.orderup.model.IngredientStatus;
 import com.orderup.model.IngredientType;
 import com.orderup.model.Recipe;
+import com.orderup.model.TileType;
 
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,8 @@ public final class GameConfig {
     public static final double MAX_ACCUMULATED_SECONDS = 0.25;
     public static final double PLAYER_START_X = 200;
     public static final double PLAYER_START_Y = 200;
+    public static final double CHOPPING_SECONDS = 2.0;
+    public static final double RICE_COOKING_SECONDS = 5.0;
     public static final List<Recipe> RECIPES = List.of(
             new Recipe(DishType.SASHIMI, 100, 30, Set.of(new Ingredient(IngredientType.FISH, IngredientStatus.CUT))),
             new Recipe(DishType.ROLL, 150, 45, Set.of(
@@ -41,6 +44,11 @@ public final class GameConfig {
             new IngredientSourceConfig(0, 1, IngredientType.FISH),
             new IngredientSourceConfig(0, 2, IngredientType.RICE),
             new IngredientSourceConfig(0, 3, IngredientType.KELP)
+    );
+
+    private static final List<FacilityConfig> KITCHEN_FACILITIES = List.of(
+            new FacilityConfig(3, 6, TileType.CHOPPING_BOARD),
+            new FacilityConfig(4, 6, TileType.RICE_COOKER)
     );
 
     private GameConfig() {
@@ -61,8 +69,27 @@ public final class GameConfig {
     }
 
     /**
+     * 返回指定关卡中的加工设施配置。
+     *
+     * @param level 关卡编号，当前只支持 1 和 2
+     * @return 切菜板和电饭煲的位置及类型
+     */
+    public static List<FacilityConfig> getFacilities(int level) {
+        return switch (level) {
+            case 1, 2 -> KITCHEN_FACILITIES;
+            default -> throw new IllegalArgumentException("不存在的关卡：" + level);
+        };
+    }
+
+    /**
      * 一个食材源的静态地图配置。
      */
     public record IngredientSourceConfig(int row, int column, IngredientType ingredientType) {
+    }
+
+    /**
+     * 一个加工设施的静态地图配置。
+     */
+    public record FacilityConfig(int row, int column, TileType tileType) {
     }
 }
