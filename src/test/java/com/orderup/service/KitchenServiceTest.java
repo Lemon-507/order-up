@@ -89,7 +89,11 @@ class KitchenServiceTest {
         Ingredient fish = map.addItem(new Ingredient(IngredientType.FISH, 0, 0));
         fish.setStatus(IngredientStatus.CUT);
         table.place(fish);
-        Plate plate = map.addItem(new Plate());
+        Plate plate = map.getItems().stream()
+                .filter(Plate.class::isInstance)
+                .map(Plate.class::cast)
+                .findFirst()
+                .orElseThrow();
         player.pickUp(plate);
 
         assertTrue(kitchen.interact(player, area, map).success());
@@ -185,6 +189,33 @@ class KitchenServiceTest {
         assertEquals(1, plate.getContents().size());
         assertEquals(IngredientType.KELP, plate.getContents().get(0).getType());
         assertEquals(IngredientStatus.RAW, plate.getContents().get(0).getStatus());
+    }
+
+    @Test
+    void emptiesHeldPlateAtTheTrashCan() {
+        GameMap map = new GameServiceImpl().createMap();
+        Player player = new Player(890, 580);
+        player.press(Direction.DOWN);
+        player.clearInput();
+        InteractionArea area = new InteractionArea();
+        area.updateFrom(player);
+        KitchenService kitchen = new KitchenServiceImpl();
+        Plate plate = map.getItems().stream()
+                .filter(Plate.class::isInstance)
+                .map(Plate.class::cast)
+                .findFirst()
+                .orElseThrow();
+        Ingredient fish = new Ingredient(IngredientType.FISH, 0, 0);
+        fish.setStatus(IngredientStatus.CUT);
+        plate.addIngredient(fish);
+        player.pickUp(plate);
+
+        assertTrue(kitchen.interact(player, area, map).success());
+        assertTrue(plate.isEmpty());
+        assertSame(plate, player.getHeldItem());
+        assertEquals(GameConfig.PLATE_COUNT, map.getItems().stream()
+                .filter(Plate.class::isInstance)
+                .count());
     }
 
     @Test

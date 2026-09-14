@@ -122,6 +122,18 @@ class GameControllerTest {
         assertEquals(GameConfig.PLATE_COUNT, countPlates(controller));
     }
 
+    @Test
+    void expiredOrdersCanMakeTheTotalScoreNegative() {
+        GameController controller = new GameController(1, () -> { });
+        controller.startGame();
+        double orderLifetime = controller.getActiveOrders().get(0).getRemainingSeconds();
+
+        controller.update(orderLifetime);
+
+        assertEquals(-20 * GameConfig.ACTIVE_ORDER_COUNT, controller.getScore());
+        assertEquals(GameConfig.ACTIVE_ORDER_COUNT, controller.getActiveOrders().size());
+    }
+
     private void submitSashimi(GameController controller, Plate plate) {
         Ingredient fish = new Ingredient(IngredientType.FISH, 0, 0);
         fish.setStatus(IngredientStatus.CUT);

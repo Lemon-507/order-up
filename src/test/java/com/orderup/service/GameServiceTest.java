@@ -57,6 +57,10 @@ class GameServiceTest {
                     ).getType()
             );
         }
+        assertEquals(
+                TileType.TRASH_CAN,
+                map.getTile(GameConfig.TRASH_CAN_ROW, GameConfig.TRASH_CAN_COLUMN).getType()
+        );
         List<Plate> plates = map.getItems().stream()
                 .filter(Plate.class::isInstance)
                 .map(Plate.class::cast)

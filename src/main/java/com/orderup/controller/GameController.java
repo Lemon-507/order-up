@@ -108,7 +108,7 @@ public class GameController {
                 interacting,
                 deltaSeconds
         );
-        orderService.updateOrders(deltaSeconds);
+        score += orderService.updateOrders(deltaSeconds);
         ensureActiveOrders();
         updatePlateRespawn(deltaSeconds);
         updateInteractableTiles();
@@ -189,12 +189,14 @@ public class GameController {
         gameMap.removeItem(plate);
         plateRespawnTimers.add(GameConfig.PLATE_RESPAWN_SECONDS);
 
+        score += result.scoreDelta();
         if (result.success()) {
-            score += result.scoreDelta();
             ensureActiveOrders();
             return InteractionResult.ok(result.message() + "，得分 +" + result.scoreDelta());
         }
-        return InteractionResult.failed(result.message());
+        return InteractionResult.failed(
+                result.message() + "，扣分 " + Math.abs(result.scoreDelta())
+        );
     }
 
     private void ensureActiveOrders() {

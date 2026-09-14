@@ -34,6 +34,8 @@ public final class GameConfig {
     public static final int ORDER_COUNTER_COLUMN = 5;
     public static final int PLATE_RETURN_ROW = 8;
     public static final int PLATE_RETURN_START_COLUMN = 7;
+    public static final int TRASH_CAN_ROW = 8;
+    public static final int TRASH_CAN_COLUMN = 11;
 
     private static final Recipe SASHIMI_RECIPE = new Recipe(
             DishType.SASHIMI,
@@ -69,7 +71,8 @@ public final class GameConfig {
             new FacilityConfig(ORDER_COUNTER_ROW, ORDER_COUNTER_COLUMN, TileType.ORDER_COUNTER),
             new FacilityConfig(PLATE_RETURN_ROW, PLATE_RETURN_START_COLUMN, TileType.PLATE_RETURN),
             new FacilityConfig(PLATE_RETURN_ROW, PLATE_RETURN_START_COLUMN + 1, TileType.PLATE_RETURN),
-            new FacilityConfig(PLATE_RETURN_ROW, PLATE_RETURN_START_COLUMN + 2, TileType.PLATE_RETURN)
+            new FacilityConfig(PLATE_RETURN_ROW, PLATE_RETURN_START_COLUMN + 2, TileType.PLATE_RETURN),
+            new FacilityConfig(TRASH_CAN_ROW, TRASH_CAN_COLUMN, TileType.TRASH_CAN)
     );
 
     private GameConfig() {

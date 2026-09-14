@@ -66,19 +66,26 @@ public class OrderServiceImpl implements OrderService {
 
     /** {@inheritDoc} */
     @Override
-    public void updateOrders(double deltaSeconds) {
+    public int updateOrders(double deltaSeconds) {
         if (deltaSeconds < 0) {
             throw new IllegalArgumentException("Delta seconds cannot be negative.");
         }
         activeOrders.forEach(order -> order.update(deltaSeconds));
+        long expiredCount = activeOrders.stream()
+                .filter(order -> order.getStatus() == OrderStatus.EXPIRED)
+                .count();
         activeOrders.removeIf(order -> order.getRemainingSeconds() == 0);
+        int penalty = scoreService.calculatePenalty(
+                OrderResult.expired("订单超时", 0)
+        );
+        return (int) expiredCount * -penalty;
     }
 
     /** {@inheritDoc} */
     @Override
     public OrderResult submitPlate(Plate plate) {
         if (plate == null || plate.isEmpty()) {
-            return OrderResult.failed("盘子为空");
+            return failedSubmission("盘子为空");
         }
 
         Iterator<Order> iterator = activeOrders.iterator();
@@ -95,6 +102,12 @@ public class OrderServiceImpl implements OrderService {
         }
 
         plate.clear();
-        return OrderResult.failed("菜品与订单不匹配");
+        return failedSubmission("菜品与订单不匹配");
+    }
+
+    private OrderResult failedSubmission(String message) {
+        OrderResult result = OrderResult.failed(message);
+        int penalty = scoreService.calculatePenalty(result);
+        return OrderResult.failed(message, -penalty);
     }
 }

@@ -7,7 +7,8 @@ public enum TileType {
     CHOPPING_BOARD(true),
     RICE_COOKER(true),
     ORDER_COUNTER(true),
-    PLATE_RETURN(true);
+    PLATE_RETURN(true),
+    TRASH_CAN(true);
 
     private final boolean blocking;
 

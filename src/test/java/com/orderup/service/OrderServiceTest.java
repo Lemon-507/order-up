@@ -36,6 +36,31 @@ class OrderServiceTest {
         assertTrue(plate.isEmpty());
     }
 
+    @Test
+    void returnsNegativeScoreForWrongSubmission() {
+        OrderServiceImpl service = new OrderServiceImpl(1);
+        service.createRandomOrder();
+        Plate plate = new Plate();
+        plate.addIngredient(ingredient(IngredientType.RICE, IngredientStatus.COOKED));
+
+        OrderResult result = service.submitPlate(plate);
+
+        assertTrue(result.scoreDelta() < 0);
+        assertEquals(-10, result.scoreDelta());
+    }
+
+    @Test
+    void returnsNegativeScoreForEveryExpiredOrder() {
+        OrderServiceImpl service = new OrderServiceImpl(1);
+        service.createRandomOrder();
+        service.createRandomOrder();
+
+        int scoreDelta = service.updateOrders(30);
+
+        assertEquals(-40, scoreDelta);
+        assertTrue(service.getActiveOrders().isEmpty());
+    }
+
     private Plate plateFor(DishType dishType) {
         Plate plate = new Plate();
         if (dishType == DishType.SASHIMI) {

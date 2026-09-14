@@ -25,8 +25,9 @@ public interface OrderService {
      * 推进所有活动订单的剩余时间，并移除已超时订单。
      *
      * @param deltaSeconds 本次要推进的秒数，不能为负数
+     * @return 这次更新中所有超时订单产生的分数变化
      */
-    void updateOrders(double deltaSeconds);
+    int updateOrders(double deltaSeconds);
 
     /**
      * 尝试用盘中菜品匹配一张活动订单，并计算成功得分。

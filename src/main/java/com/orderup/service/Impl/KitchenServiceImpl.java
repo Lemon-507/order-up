@@ -28,6 +28,9 @@ public class KitchenServiceImpl implements com.orderup.service.KitchenService {
         if (tile instanceof ProcessingStation station) {
             return interactWithStation(player, station, map);
         }
+        if (tile != null && tile.getType() == TileType.TRASH_CAN) {
+            return interactWithTrashCan(player);
+        }
         if (player.getHeldItem() instanceof Ingredient ingredient && !(tile instanceof Table)) {
             Plate plate = findPlate(area, map);
             if (plate != null) {
@@ -70,6 +73,17 @@ public class KitchenServiceImpl implements com.orderup.service.KitchenService {
             return takeIngredientFromSource(player, area, map, source);
         }
         return InteractionResult.failed("附近没有可交互物品");
+    }
+
+    private InteractionResult interactWithTrashCan(Player player) {
+        if (!(player.getHeldItem() instanceof Plate plate)) {
+            return InteractionResult.failed("请手持有食材的盘子使用垃圾桶");
+        }
+        if (plate.isEmpty()) {
+            return InteractionResult.failed("盘子已经是空的");
+        }
+        plate.clear();
+        return InteractionResult.ok("已倒掉盘中食材");
     }
 
     /**

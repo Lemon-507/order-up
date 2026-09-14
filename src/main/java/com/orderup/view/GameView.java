@@ -274,6 +274,7 @@ public class GameView {
 
     private void renderOrders(List<Order> orders, int score) {
         scoreLabel.setText("得分 " + score);
+        scoreLabel.setTextFill(score < 0 ? Color.RED : Color.web("#F4C95D"));
         List<String> orderIds = orders.stream().map(Order::getId).toList();
         if (!orderIds.equals(renderedOrderIds)) {
             rebuildOrderCards(orders);
