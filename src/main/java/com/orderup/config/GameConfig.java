@@ -29,7 +29,8 @@ public final class GameConfig {
     public static final double RICE_COOKING_SECONDS = 5.0;
     public static final double PLATE_RESPAWN_SECONDS = 3.0;
     public static final int PLATE_COUNT = 3;
-    public static final int ACTIVE_ORDER_COUNT = 3;
+    public static final int INITIAL_ACTIVE_ORDER_COUNT = 1;
+    public static final double ORDER_SPAWN_INTERVAL_SECONDS = 10.0;
     public static final int ORDER_COUNTER_ROW = 8;
     public static final int ORDER_COUNTER_COLUMN = 5;
     public static final int PLATE_RETURN_ROW = 8;
