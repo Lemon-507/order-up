@@ -13,13 +13,20 @@ public class OrderServiceImpl implements OrderService {
     private final List<Order> activeOrders = new ArrayList<>();
     private final ScoreServiceImpl scoreService;
     private final Random random;
-    private final List<Recipe> recipes = GameConfig.RECIPES;
+    private final List<Recipe> recipes;
 
     /**
      * 使用默认计分服务和随机数生成器创建订单服务。
      */
     public OrderServiceImpl() {
-        this(new ScoreServiceImpl(), new Random());
+        this(GameConfig.DEFAULT_LEVEL);
+    }
+
+    /**
+     * 创建只会生成指定关卡可完成菜谱的订单服务。
+     */
+    public OrderServiceImpl(int level) {
+        this(new ScoreServiceImpl(), new Random(), GameConfig.getRecipes(level));
     }
 
     /**
@@ -29,8 +36,17 @@ public class OrderServiceImpl implements OrderService {
      * @param random 随机选择菜谱时使用的随机数生成器
      */
     OrderServiceImpl(ScoreServiceImpl scoreService, Random random) {
+        this(scoreService, random, GameConfig.RECIPES);
+    }
+
+    private OrderServiceImpl(
+            ScoreServiceImpl scoreService,
+            Random random,
+            List<Recipe> recipes
+    ) {
         this.scoreService = scoreService;
         this.random = random;
+        this.recipes = recipes;
     }
 
     /** {@inheritDoc} */

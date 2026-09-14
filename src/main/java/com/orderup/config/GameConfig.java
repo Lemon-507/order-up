@@ -27,13 +27,28 @@ public final class GameConfig {
     public static final double PLAYER_START_Y = 200;
     public static final double CHOPPING_SECONDS = 2.0;
     public static final double RICE_COOKING_SECONDS = 5.0;
-    public static final List<Recipe> RECIPES = List.of(
-            new Recipe(DishType.SASHIMI, 100, 30, Set.of(new Ingredient(IngredientType.FISH, IngredientStatus.CUT))),
-            new Recipe(DishType.ROLL, 150, 45, Set.of(
+    public static final double PLATE_RESPAWN_SECONDS = 3.0;
+    public static final int ORDER_COUNTER_ROW = 8;
+    public static final int ORDER_COUNTER_COLUMN = 5;
+    public static final int PLATE_RETURN_ROW = 8;
+    public static final int PLATE_RETURN_COLUMN = 7;
+
+    private static final Recipe SASHIMI_RECIPE = new Recipe(
+            DishType.SASHIMI,
+            100,
+            30,
+            Set.of(new Ingredient(IngredientType.FISH, IngredientStatus.CUT))
+    );
+    private static final Recipe ROLL_RECIPE = new Recipe(
+            DishType.ROLL,
+            150,
+            45,
+            Set.of(
                     new Ingredient(IngredientType.KELP, IngredientStatus.RAW),
                     new Ingredient(IngredientType.RICE, IngredientStatus.COOKED)
-            ))
+            )
     );
+    public static final List<Recipe> RECIPES = List.of(SASHIMI_RECIPE, ROLL_RECIPE);
 
     private static final List<IngredientSourceConfig> LEVEL_1_SOURCES = List.of(
             new IngredientSourceConfig(0, 1, IngredientType.FISH),
@@ -48,7 +63,9 @@ public final class GameConfig {
 
     private static final List<FacilityConfig> KITCHEN_FACILITIES = List.of(
             new FacilityConfig(3, 6, TileType.CHOPPING_BOARD),
-            new FacilityConfig(4, 6, TileType.RICE_COOKER)
+            new FacilityConfig(4, 6, TileType.RICE_COOKER),
+            new FacilityConfig(ORDER_COUNTER_ROW, ORDER_COUNTER_COLUMN, TileType.ORDER_COUNTER),
+            new FacilityConfig(PLATE_RETURN_ROW, PLATE_RETURN_COLUMN, TileType.PLATE_RETURN)
     );
 
     private GameConfig() {
@@ -64,6 +81,17 @@ public final class GameConfig {
         return switch (level) {
             case 1 -> LEVEL_1_SOURCES;
             case 2 -> LEVEL_2_SOURCES;
+            default -> throw new IllegalArgumentException("不存在的关卡：" + level);
+        };
+    }
+
+    /**
+     * 返回指定关卡允许生成的订单菜谱。
+     */
+    public static List<Recipe> getRecipes(int level) {
+        return switch (level) {
+            case 1 -> List.of(SASHIMI_RECIPE);
+            case 2 -> RECIPES;
             default -> throw new IllegalArgumentException("不存在的关卡：" + level);
         };
     }

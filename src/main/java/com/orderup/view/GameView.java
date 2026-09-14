@@ -4,6 +4,8 @@ import com.orderup.config.GameConfig;
 import com.orderup.controller.GameController;
 import com.orderup.model.Direction;
 import com.orderup.model.GameState;
+import com.orderup.model.InteractionResult;
+import com.orderup.model.Order;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -25,6 +27,16 @@ public class GameView {
     private Canvas gameCanvas;
     @FXML
     private Label timeLabel;
+    @FXML
+    private Label orderNameLabel;
+    @FXML
+    private Label orderRecipeLabel;
+    @FXML
+    private Label orderTimeLabel;
+    @FXML
+    private Label scoreLabel;
+    @FXML
+    private Label interactionMessageLabel;
     @FXML
     private StackPane gameRoot;
     @FXML
@@ -114,7 +126,7 @@ public class GameView {
             if (!interactKeyPressed) {
                 interactKeyPressed = true;
                 controller.setInteracting(true);
-                controller.interact();
+                showInteractionResult(controller.interact());
             }
             event.consume();
             return;
@@ -254,6 +266,40 @@ public class GameView {
         gameItemView.render(graphics, controller.getGameMap().getItems());
         playerView.render(graphics, controller.getPlayer());
         renderTime(controller.getRemainingSeconds());
+        renderOrder(controller.getCurrentOrder(), controller.getScore());
+    }
+
+    private void renderOrder(Order order, int score) {
+        scoreLabel.setText("得分 " + score);
+        if (order == null) {
+            orderNameLabel.setText("等待订单");
+            orderRecipeLabel.setText("需要：--");
+            orderTimeLabel.setText("订单 00:00");
+            return;
+        }
+
+        orderNameLabel.setText(order.getRecipe().getDishName());
+        orderRecipeLabel.setText(switch (order.getRecipe().getDishType()) {
+            case SASHIMI -> "需要：切鱼";
+            case ROLL -> "需要：熟米 + 海苔";
+        });
+        int remainingSeconds = (int) Math.ceil(order.getRemainingSeconds());
+        orderTimeLabel.setText(String.format(
+                "订单 %02d:%02d",
+                remainingSeconds / 60,
+                remainingSeconds % 60
+        ));
+        orderTimeLabel.setTextFill(
+                remainingSeconds <= 10 ? Color.RED : Color.web("#F4C95D")
+        );
+    }
+
+    private void showInteractionResult(InteractionResult result) {
+        interactionMessageLabel.setText(result.message());
+        interactionMessageLabel.setTextFill(result.success()
+                ? Color.web("#9BE28F")
+                : Color.web("#FF8A80"));
+        interactionMessageLabel.setVisible(true);
     }
 
     private void renderTime(int totalSeconds) {

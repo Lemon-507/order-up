@@ -11,8 +11,18 @@ import com.orderup.service.Impl.OrderServiceImpl;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OrderServiceTest {
+    @Test
+    void firstLevelOnlyCreatesOrdersThatCanBeCompletedWithoutKelp() {
+        OrderServiceImpl service = new OrderServiceImpl(1);
+
+        Order order = service.createRandomOrder();
+
+        assertEquals(DishType.SASHIMI, order.getRecipe().getDishType());
+    }
+
     @Test
     void submitsAPlateMatchingTheActiveOrder() {
         OrderServiceImpl service = new OrderServiceImpl();

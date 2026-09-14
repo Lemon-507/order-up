@@ -1,5 +1,6 @@
 package com.orderup.service;
 
+import com.orderup.config.GameConfig;
 import com.orderup.model.GameMap;
 import com.orderup.model.IngredientSource;
 import com.orderup.model.IngredientType;
@@ -41,7 +42,20 @@ class GameServiceTest {
         );
         assertEquals(TileType.CHOPPING_BOARD, choppingBoard.getType());
         assertEquals(TileType.RICE_COOKER, riceCooker.getType());
-        assertInstanceOf(Plate.class, map.getItems().get(0));
+        assertEquals(
+                TileType.ORDER_COUNTER,
+                map.getTile(GameConfig.ORDER_COUNTER_ROW, GameConfig.ORDER_COUNTER_COLUMN).getType()
+        );
+        assertEquals(
+                TileType.PLATE_RETURN,
+                map.getTile(GameConfig.PLATE_RETURN_ROW, GameConfig.PLATE_RETURN_COLUMN).getType()
+        );
+        Plate plate = assertInstanceOf(Plate.class, map.getItems().get(0));
+        assertEquals(
+                GameConfig.PLATE_RETURN_COLUMN * GameConfig.TILE_SIZE
+                        + (GameConfig.TILE_SIZE - plate.getWidth()) / 2.0,
+                plate.getX()
+        );
     }
 
     @Test
