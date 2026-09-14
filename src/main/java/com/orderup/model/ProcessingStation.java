@@ -36,10 +36,6 @@ public class ProcessingStation extends Tile {
         progressSeconds += deltaSeconds;
     }
 
-    public void resetProgress() {
-        progressSeconds = 0;
-    }
-
     public boolean isEmpty() {
         return ingredient == null;
     }

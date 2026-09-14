@@ -69,5 +69,31 @@ public class GameItemView {
         graphics.setStroke(Color.web("#82919A"));
         graphics.setLineWidth(3);
         graphics.strokeOval(plate.getX(), plate.getY(), plate.getWidth(), plate.getHeight());
+
+        renderPlateContents(graphics, plate);
+    }
+
+    private void renderPlateContents(GraphicsContext graphics, Plate plate) {
+        List<Ingredient> contents = plate.getContents();
+        int visibleCount = Math.min(contents.size(), 3);
+        if (visibleCount == 0) {
+            return;
+        }
+
+        double markerSize = visibleCount <= 2 ? 14 : 10;
+        double gap = 2;
+        double totalWidth = visibleCount * markerSize + (visibleCount - 1) * gap;
+        double startX = plate.getX() + (plate.getWidth() - totalWidth) / 2;
+        double markerY = plate.getY() + (plate.getHeight() - markerSize) / 2;
+
+        for (int index = 0; index < visibleCount; index++) {
+            Ingredient ingredient = contents.get(index);
+            double markerX = startX + index * (markerSize + gap);
+            graphics.setFill(IngredientPalette.itemColor(ingredient.getType()));
+            graphics.fillOval(markerX, markerY, markerSize, markerSize);
+            graphics.setStroke(Color.web("#263238"));
+            graphics.setLineWidth(1);
+            graphics.strokeOval(markerX, markerY, markerSize, markerSize);
+        }
     }
 }

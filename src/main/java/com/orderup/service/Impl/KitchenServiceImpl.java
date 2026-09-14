@@ -26,7 +26,21 @@ public class KitchenServiceImpl implements com.orderup.service.KitchenService {
         Tile tile = findTile(area, map);
 
         if (tile instanceof ProcessingStation station) {
-            return interactWithStation(player, station);
+            return interactWithStation(player, station, map);
+        }
+        if (player.getHeldItem() instanceof Plate plate && !(tile instanceof Table)) {
+            if (tile instanceof IngredientSource source) {
+                Ingredient ingredient = new Ingredient(
+                        source.getIngredientType(),
+                        area.getX(),
+                        area.getY()
+                );
+                return addIngredientToPlate(plate, ingredient, map);
+            }
+            Ingredient ingredient = findIngredient(area, map);
+            if (ingredient != null) {
+                return addIngredientToPlate(plate, ingredient, map);
+            }
         }
         if (player.hasHeldItem()) {
             return placeOrDrop(player, area, map, tile);
@@ -51,7 +65,22 @@ public class KitchenServiceImpl implements com.orderup.service.KitchenService {
     /**
      * 向加工设施放入原料，或取回已经加工完成的食材。
      */
-    private InteractionResult interactWithStation(Player player, ProcessingStation station) {
+    private InteractionResult interactWithStation(
+            Player player,
+            ProcessingStation station,
+            GameMap map
+    ) {
+        if (player.getHeldItem() instanceof Plate plate) {
+            Ingredient ingredient = station.getIngredient();
+            if (ingredient == null) {
+                return InteractionResult.failed("设施中没有食材");
+            }
+            InteractionResult result = addIngredientToPlate(plate, ingredient, map);
+            if (result.success()) {
+                station.take();
+            }
+            return result;
+        }
         if (player.hasHeldItem()) {
             return placeIngredientOnStation(player, station);
         }
@@ -138,7 +167,6 @@ public class KitchenServiceImpl implements com.orderup.service.KitchenService {
         }
 
         if (!activelyInteracting) {
-            station.resetProgress();
             return;
         }
         station.advance(deltaSeconds);
@@ -182,21 +210,21 @@ public class KitchenServiceImpl implements com.orderup.service.KitchenService {
         GameItem tableItem = table.getItem();
 
         if (heldItem instanceof Ingredient ingredient && tableItem instanceof Plate plate) {
-            if (!plate.addIngredient(ingredient)) {
-                return InteractionResult.failed("该食材尚不能装盘");
+            InteractionResult result = addIngredientToPlate(plate, ingredient, map);
+            if (!result.success()) {
+                return result;
             }
             player.releaseHeldItem();
-            map.removeItem(ingredient);
-            return InteractionResult.ok("食材已装盘");
+            return result;
         }
 
         if (heldItem instanceof Plate plate && tableItem instanceof Ingredient ingredient) {
-            if (!plate.addIngredient(ingredient)) {
-                return InteractionResult.failed("该食材尚不能装盘");
+            InteractionResult result = addIngredientToPlate(plate, ingredient, map);
+            if (!result.success()) {
+                return result;
             }
             table.take();
-            map.removeItem(ingredient);
-            return InteractionResult.ok("食材已装盘");
+            return result;
         }
 
         if (table.place(heldItem)) {
@@ -219,6 +247,33 @@ public class KitchenServiceImpl implements com.orderup.service.KitchenService {
         );
         player.pickUp(ingredient);
         return InteractionResult.ok("取得食材");
+    }
+
+    private InteractionResult addIngredientToPlate(
+            Plate plate,
+            Ingredient ingredient,
+            GameMap map
+    ) {
+        if (!plate.addIngredient(ingredient)) {
+            return InteractionResult.failed("该食材尚不能装盘");
+        }
+        map.removeItem(ingredient);
+        return InteractionResult.ok("食材已装盘");
+    }
+
+    private Ingredient findIngredient(InteractionArea area, GameMap map) {
+        for (GameItem item : map.getItems()) {
+            if (item instanceof Ingredient ingredient
+                    && area.intersects(
+                    ingredient.getX(),
+                    ingredient.getY(),
+                    ingredient.getWidth(),
+                    ingredient.getHeight()
+            )) {
+                return ingredient;
+            }
+        }
+        return null;
     }
 
     /** {@inheritDoc} */

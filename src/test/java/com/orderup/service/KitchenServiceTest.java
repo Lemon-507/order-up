@@ -9,6 +9,7 @@ import com.orderup.model.IngredientType;
 import com.orderup.model.InteractionArea;
 import com.orderup.model.Plate;
 import com.orderup.model.Player;
+import com.orderup.model.ProcessingStation;
 import com.orderup.model.Table;
 import com.orderup.service.Impl.GameServiceImpl;
 import com.orderup.service.Impl.KitchenServiceImpl;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class KitchenServiceTest {
@@ -75,7 +77,94 @@ class KitchenServiceTest {
     }
 
     @Test
-    void cutsRawFishAtTheChoppingBoard() {
+    void addsTableIngredientToHeldPlate() {
+        GameMap map = new GameServiceImpl().createMap();
+        Player player = new Player(360, 250);
+        player.press(Direction.RIGHT);
+        player.clearInput();
+        InteractionArea area = new InteractionArea();
+        area.updateFrom(player);
+        KitchenService kitchen = new KitchenServiceImpl();
+        Table table = (Table) map.getTile(3, 5);
+        Ingredient fish = map.addItem(new Ingredient(IngredientType.FISH, 0, 0));
+        fish.setStatus(IngredientStatus.CUT);
+        table.place(fish);
+        Plate plate = map.addItem(new Plate());
+        player.pickUp(plate);
+
+        assertTrue(kitchen.interact(player, area, map).success());
+        assertSame(plate, player.getHeldItem());
+        assertTrue(table.isEmpty());
+        assertEquals(fish, plate.getContents().get(0));
+        assertFalse(map.getItems().contains(fish));
+    }
+
+    @Test
+    void addsFinishedStationIngredientToHeldPlate() {
+        GameMap map = new GameServiceImpl().createMap();
+        Player player = playerFacingLeftAt(250);
+        InteractionArea area = new InteractionArea();
+        area.updateFrom(player);
+        KitchenService kitchen = new KitchenServiceImpl();
+        ProcessingStation choppingBoard = (ProcessingStation) map.getTile(3, 6);
+        Ingredient fish = map.addItem(new Ingredient(IngredientType.FISH, 0, 0));
+        fish.setStatus(IngredientStatus.CUT);
+        choppingBoard.place(fish);
+        Plate plate = map.addItem(new Plate());
+        player.pickUp(plate);
+
+        assertTrue(kitchen.interact(player, area, map).success());
+        assertSame(plate, player.getHeldItem());
+        assertTrue(choppingBoard.isEmpty());
+        assertEquals(fish, plate.getContents().get(0));
+        assertFalse(map.getItems().contains(fish));
+    }
+
+    @Test
+    void addsNearbyIngredientToHeldPlate() {
+        GameMap map = new GameServiceImpl().createMap();
+        Player player = new Player(280, 500);
+        player.press(Direction.RIGHT);
+        player.clearInput();
+        InteractionArea area = new InteractionArea();
+        area.updateFrom(player);
+        KitchenService kitchen = new KitchenServiceImpl();
+        Ingredient fish = map.addItem(new Ingredient(
+                IngredientType.FISH,
+                area.getX(),
+                area.getY()
+        ));
+        fish.setStatus(IngredientStatus.CUT);
+        Plate plate = map.addItem(new Plate());
+        player.pickUp(plate);
+
+        assertTrue(kitchen.interact(player, area, map).success());
+        assertSame(plate, player.getHeldItem());
+        assertEquals(fish, plate.getContents().get(0));
+        assertFalse(map.getItems().contains(fish));
+    }
+
+    @Test
+    void addsRawKelpFromSourceToHeldPlate() {
+        GameMap map = new GameServiceImpl().createMap(2);
+        Player player = new Player(250, 80);
+        player.press(Direction.UP);
+        player.clearInput();
+        InteractionArea area = new InteractionArea();
+        area.updateFrom(player);
+        KitchenService kitchen = new KitchenServiceImpl();
+        Plate plate = map.addItem(new Plate());
+        player.pickUp(plate);
+
+        assertTrue(kitchen.interact(player, area, map).success());
+        assertSame(plate, player.getHeldItem());
+        assertEquals(1, plate.getContents().size());
+        assertEquals(IngredientType.KELP, plate.getContents().get(0).getType());
+        assertEquals(IngredientStatus.RAW, plate.getContents().get(0).getStatus());
+    }
+
+    @Test
+    void keepsPartialChoppingProgressWhenInteractionStops() {
         GameMap map = new GameServiceImpl().createMap();
         Player player = playerFacingLeftAt(250);
         Ingredient fish = map.addItem(new Ingredient(IngredientType.FISH, 0, 0));
@@ -94,12 +183,11 @@ class KitchenServiceTest {
                 true,
                 GameConfig.CHOPPING_SECONDS / 2
         );
-        kitchen.updateProcessing(area, map, false, 0);
         kitchen.updateProcessing(
                 area,
                 map,
-                true,
-                GameConfig.CHOPPING_SECONDS / 2
+                false,
+                GameConfig.CHOPPING_SECONDS
         );
         assertEquals(IngredientStatus.RAW, fish.getStatus());
 
