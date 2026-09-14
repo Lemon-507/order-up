@@ -41,7 +41,7 @@ class GameControllerTest {
     void submittedPlateRespawnsAtThePlateReturnAfterDelay() {
         GameController controller = new GameController(1, () -> { });
         controller.startGame();
-        assertEquals(GameConfig.ACTIVE_ORDER_COUNT, controller.getActiveOrders().size());
+        assertEquals(GameConfig.INITIAL_ACTIVE_ORDER_COUNT, controller.getActiveOrders().size());
         Order submittedOrder = controller.getActiveOrders().get(0);
         Plate plate = controller.getGameMap().getItems().stream()
                 .filter(Plate.class::isInstance)
@@ -67,7 +67,7 @@ class GameControllerTest {
                 countPlates(controller)
         );
         assertTrue(controller.getScore() > 0);
-        assertEquals(GameConfig.ACTIVE_ORDER_COUNT, controller.getActiveOrders().size());
+        assertEquals(GameConfig.INITIAL_ACTIVE_ORDER_COUNT, controller.getActiveOrders().size());
         assertTrue(controller.getActiveOrders().stream()
                 .noneMatch(order -> order.getId().equals(submittedOrder.getId())));
 
@@ -126,12 +126,33 @@ class GameControllerTest {
     void expiredOrdersCanMakeTheTotalScoreNegative() {
         GameController controller = new GameController(1, () -> { });
         controller.startGame();
-        double orderLifetime = controller.getActiveOrders().get(0).getRemainingSeconds();
 
-        controller.update(orderLifetime);
+        controller.update(GameConfig.ORDER_SPAWN_INTERVAL_SECONDS);
+        controller.update(GameConfig.ORDER_SPAWN_INTERVAL_SECONDS);
+        controller.update(GameConfig.ORDER_SPAWN_INTERVAL_SECONDS);
 
-        assertEquals(-20 * GameConfig.ACTIVE_ORDER_COUNT, controller.getScore());
-        assertEquals(GameConfig.ACTIVE_ORDER_COUNT, controller.getActiveOrders().size());
+        assertEquals(-20, controller.getScore());
+        assertEquals(
+                GameConfig.INITIAL_ACTIVE_ORDER_COUNT + 2,
+                controller.getActiveOrders().size()
+        );
+    }
+
+    @Test
+    void graduallyAddsOrdersAtTheConfiguredInterval() {
+        GameController controller = new GameController(1, () -> { });
+        controller.startGame();
+
+        assertEquals(GameConfig.INITIAL_ACTIVE_ORDER_COUNT, controller.getActiveOrders().size());
+
+        controller.update(GameConfig.ORDER_SPAWN_INTERVAL_SECONDS - 0.1);
+        assertEquals(1, controller.getActiveOrders().size());
+
+        controller.update(0.2);
+        assertEquals(2, controller.getActiveOrders().size());
+
+        controller.update(GameConfig.ORDER_SPAWN_INTERVAL_SECONDS);
+        assertEquals(3, controller.getActiveOrders().size());
     }
 
     private void submitSashimi(GameController controller, Plate plate) {
