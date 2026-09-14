@@ -5,7 +5,10 @@ public enum TileType {
     TABLE(true),
     INGREDIENT_SOURCE(true),
     CHOPPING_BOARD(true),
-    RICE_COOKER(true);
+    RICE_COOKER(true),
+    ORDER_COUNTER(true),
+    PLATE_RETURN(true),
+    TRASH_CAN(true);
 
     private final boolean blocking;
 

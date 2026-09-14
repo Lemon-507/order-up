@@ -38,6 +38,10 @@ public class GameMapView {
         } else if (tile instanceof ProcessingStation station) {
             renderFacilityLabel(graphics, station);
             renderProcessingProgress(graphics, station);
+        } else if (tile.getType() == TileType.ORDER_COUNTER
+                || tile.getType() == TileType.PLATE_RETURN
+                || tile.getType() == TileType.TRASH_CAN) {
+            renderCounterLabel(graphics, tile);
         }
     }
 
@@ -51,6 +55,9 @@ public class GameMapView {
         return switch (tile.getType()) {
             case CHOPPING_BOARD -> Color.web("#B87945");
             case RICE_COOKER -> Color.web("#AEB9C2");
+            case ORDER_COUNTER -> Color.web("#2D6F73");
+            case PLATE_RETURN -> Color.web("#6B5B86");
+            case TRASH_CAN -> Color.web("#48545C");
             default -> Color.LIGHTGRAY;
         };
     }
@@ -100,5 +107,23 @@ public class GameMapView {
         graphics.fillRoundRect(barX, barY, barWidth, 6, 4, 4);
         graphics.setFill(Color.web("#7ED957"));
         graphics.fillRoundRect(barX, barY, barWidth * progress, 6, 4, 4);
+    }
+
+    private void renderCounterLabel(GraphicsContext graphics, Tile tile) {
+        graphics.setFill(Color.WHITE);
+        graphics.setFont(Font.font("Arial", FontWeight.BOLD, 16));
+        graphics.setTextAlign(TextAlignment.CENTER);
+        graphics.setTextBaseline(VPos.CENTER);
+        String label = switch (tile.getType()) {
+            case ORDER_COUNTER -> "出餐口";
+            case PLATE_RETURN -> "盘子区";
+            case TRASH_CAN -> "垃圾桶";
+            default -> "";
+        };
+        graphics.fillText(
+                label,
+                tile.getX() + tile.getSize() / 2,
+                tile.getY() + tile.getSize() / 2
+        );
     }
 }

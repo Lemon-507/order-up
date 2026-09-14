@@ -9,6 +9,10 @@ public record OrderResult(boolean success, boolean expired, String message, int 
         return new OrderResult(false, false, message, 0);
     }
 
+    public static OrderResult failed(String message, int scoreDelta) {
+        return new OrderResult(false, false, message, scoreDelta);
+    }
+
     public static OrderResult expired(String message, int scoreDelta) {
         return new OrderResult(false, true, message, scoreDelta);
     }

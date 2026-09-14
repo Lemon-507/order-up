@@ -51,14 +51,12 @@ public interface GameService {
             map.setTile(
                     facility.row(),
                     facility.column(),
-                    new ProcessingStation(
-                            facility.row(),
-                            facility.column(),
-                            facility.tileType()
-                    )
+                    createFacility(facility)
             );
         }
-        map.addItem(new Plate(130, 130));
+        for (int count = 0; count < GameConfig.PLATE_COUNT; count++) {
+            addEmptyPlate(map);
+        }
     }
 
     /**
@@ -70,5 +68,37 @@ public interface GameService {
      */
     default void placeTable(GameMap map, int row, int column) {
         map.setTile(row, column, new Table(row, column));
+    }
+
+    /** 创建配置指定的普通设施或加工设施。 */
+    default Tile createFacility(GameConfig.FacilityConfig facility) {
+        return switch (facility.tileType()) {
+            case CHOPPING_BOARD, RICE_COOKER -> new ProcessingStation(
+                    facility.row(),
+                    facility.column(),
+                    facility.tileType()
+            );
+            default -> new Tile(facility.row(), facility.column(), facility.tileType());
+        };
+    }
+
+    /** 在固定盘子区的第一个空位生成一个空盘子。 */
+    default Plate addEmptyPlate(GameMap map) {
+        for (int slot = 0; slot < GameConfig.PLATE_COUNT; slot++) {
+            Plate plate = new Plate();
+            double x = (GameConfig.PLATE_RETURN_START_COLUMN + slot) * GameConfig.TILE_SIZE
+                    + (GameConfig.TILE_SIZE - plate.getWidth()) / 2.0;
+            double y = GameConfig.PLATE_RETURN_ROW * GameConfig.TILE_SIZE
+                    + (GameConfig.TILE_SIZE - plate.getHeight()) / 2.0;
+            boolean occupied = map.getItems().stream()
+                    .filter(Plate.class::isInstance)
+                    .anyMatch(item -> item.getX() == x && item.getY() == y);
+            if (!occupied) {
+                plate.setX(x);
+                plate.setY(y);
+                return map.addItem(plate);
+            }
+        }
+        throw new IllegalStateException("盘子区已没有空位");
     }
 }

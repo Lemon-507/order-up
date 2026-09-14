@@ -4,6 +4,8 @@ import com.orderup.config.GameConfig;
 import com.orderup.controller.GameController;
 import com.orderup.model.Direction;
 import com.orderup.model.GameState;
+import com.orderup.model.InteractionResult;
+import com.orderup.model.Order;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -13,8 +15,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 游戏页面的 JavaFX 显示层：接收输入、驱动主循环并绘制画面。
@@ -25,6 +32,12 @@ public class GameView {
     private Canvas gameCanvas;
     @FXML
     private Label timeLabel;
+    @FXML
+    private VBox ordersBox;
+    @FXML
+    private Label scoreLabel;
+    @FXML
+    private Label interactionMessageLabel;
     @FXML
     private StackPane gameRoot;
     @FXML
@@ -49,6 +62,8 @@ public class GameView {
     private boolean interactKeyPressed;
     private boolean pauseKeyPressed;
     private boolean disposed;
+    private final List<OrderCard> orderCards = new ArrayList<>();
+    private List<String> renderedOrderIds = List.of();
 
     /**
      * 按选中的关卡创建游戏，并在 FXML 控件加载完成后启动主循环。
@@ -114,7 +129,7 @@ public class GameView {
             if (!interactKeyPressed) {
                 interactKeyPressed = true;
                 controller.setInteracting(true);
-                controller.interact();
+                showInteractionResult(controller.interact());
             }
             event.consume();
             return;
@@ -254,6 +269,70 @@ public class GameView {
         gameItemView.render(graphics, controller.getGameMap().getItems());
         playerView.render(graphics, controller.getPlayer());
         renderTime(controller.getRemainingSeconds());
+        renderOrders(controller.getActiveOrders(), controller.getScore());
+    }
+
+    private void renderOrders(List<Order> orders, int score) {
+        scoreLabel.setText("得分 " + score);
+        scoreLabel.setTextFill(score < 0 ? Color.RED : Color.web("#F4C95D"));
+        List<String> orderIds = orders.stream().map(Order::getId).toList();
+        if (!orderIds.equals(renderedOrderIds)) {
+            rebuildOrderCards(orders);
+            renderedOrderIds = orderIds;
+        }
+
+        for (int index = 0; index < orders.size(); index++) {
+            Order order = orders.get(index);
+            Label timeLabel = orderCards.get(index).timeLabel();
+            int remainingSeconds = (int) Math.ceil(order.getRemainingSeconds());
+            timeLabel.setText(String.format(
+                    "%02d:%02d",
+                    remainingSeconds / 60,
+                    remainingSeconds % 60
+            ));
+            timeLabel.setTextFill(
+                    remainingSeconds <= 10 ? Color.RED : Color.web("#F4C95D")
+            );
+        }
+    }
+
+    private void rebuildOrderCards(List<Order> orders) {
+        ordersBox.getChildren().clear();
+        orderCards.clear();
+
+        for (int index = 0; index < orders.size(); index++) {
+            Order order = orders.get(index);
+            Label indexLabel = new Label("ORDER " + (index + 1));
+            indexLabel.getStyleClass().add("order-index");
+            Label nameLabel = new Label(order.getRecipe().getDishName());
+            nameLabel.getStyleClass().add("order-name");
+            Label recipeLabel = new Label(recipeText(order));
+            recipeLabel.getStyleClass().add("order-recipe");
+            Label timeLabel = new Label();
+            timeLabel.getStyleClass().add("order-time");
+
+            HBox header = new HBox(12, indexLabel, timeLabel);
+            header.getStyleClass().add("order-card-header");
+            VBox card = new VBox(3, header, nameLabel, recipeLabel);
+            card.getStyleClass().add("order-card");
+            ordersBox.getChildren().add(card);
+            orderCards.add(new OrderCard(timeLabel));
+        }
+    }
+
+    private String recipeText(Order order) {
+        return switch (order.getRecipe().getDishType()) {
+            case SASHIMI -> "需要：切鱼";
+            case ROLL -> "需要：熟米 + 海苔";
+        };
+    }
+
+    private void showInteractionResult(InteractionResult result) {
+        interactionMessageLabel.setText(result.message());
+        interactionMessageLabel.setTextFill(result.success()
+                ? Color.web("#9BE28F")
+                : Color.web("#FF8A80"));
+        interactionMessageLabel.setVisible(true);
     }
 
     private void renderTime(int totalSeconds) {
@@ -283,5 +362,8 @@ public class GameView {
         if (controller != null) {
             controller.stopGame();
         }
+    }
+
+    private record OrderCard(Label timeLabel) {
     }
 }

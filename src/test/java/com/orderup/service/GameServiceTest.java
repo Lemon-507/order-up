@@ -1,5 +1,6 @@
 package com.orderup.service;
 
+import com.orderup.config.GameConfig;
 import com.orderup.model.GameMap;
 import com.orderup.model.IngredientSource;
 import com.orderup.model.IngredientType;
@@ -9,6 +10,8 @@ import com.orderup.model.Table;
 import com.orderup.model.TileType;
 import com.orderup.service.Impl.GameServiceImpl;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -41,7 +44,36 @@ class GameServiceTest {
         );
         assertEquals(TileType.CHOPPING_BOARD, choppingBoard.getType());
         assertEquals(TileType.RICE_COOKER, riceCooker.getType());
-        assertInstanceOf(Plate.class, map.getItems().get(0));
+        assertEquals(
+                TileType.ORDER_COUNTER,
+                map.getTile(GameConfig.ORDER_COUNTER_ROW, GameConfig.ORDER_COUNTER_COLUMN).getType()
+        );
+        for (int slot = 0; slot < GameConfig.PLATE_COUNT; slot++) {
+            assertEquals(
+                    TileType.PLATE_RETURN,
+                    map.getTile(
+                            GameConfig.PLATE_RETURN_ROW,
+                            GameConfig.PLATE_RETURN_START_COLUMN + slot
+                    ).getType()
+            );
+        }
+        assertEquals(
+                TileType.TRASH_CAN,
+                map.getTile(GameConfig.TRASH_CAN_ROW, GameConfig.TRASH_CAN_COLUMN).getType()
+        );
+        List<Plate> plates = map.getItems().stream()
+                .filter(Plate.class::isInstance)
+                .map(Plate.class::cast)
+                .toList();
+        assertEquals(GameConfig.PLATE_COUNT, plates.size());
+        for (int slot = 0; slot < GameConfig.PLATE_COUNT; slot++) {
+            Plate plate = plates.get(slot);
+            assertEquals(
+                    (GameConfig.PLATE_RETURN_START_COLUMN + slot) * GameConfig.TILE_SIZE
+                            + (GameConfig.TILE_SIZE - plate.getWidth()) / 2.0,
+                    plate.getX()
+            );
+        }
     }
 
     @Test

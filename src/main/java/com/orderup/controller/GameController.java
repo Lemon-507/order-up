@@ -6,14 +6,24 @@ import com.orderup.model.GameMap;
 import com.orderup.model.GameState;
 import com.orderup.model.InteractionArea;
 import com.orderup.model.InteractionResult;
+import com.orderup.model.Order;
+import com.orderup.model.OrderResult;
+import com.orderup.model.Plate;
 import com.orderup.model.Player;
 import com.orderup.model.Tile;
+import com.orderup.model.TileType;
 import com.orderup.service.GameService;
 import com.orderup.service.Impl.GameServiceImpl;
 import com.orderup.service.Impl.KitchenServiceImpl;
+import com.orderup.service.Impl.OrderServiceImpl;
 import com.orderup.service.Impl.PlayerServiceImpl;
+import com.orderup.service.OrderService;
 import com.orderup.service.PlayerService;
 import com.orderup.util.GameTimer;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * 编排一局游戏，不包含 JavaFX 显示代码。
@@ -22,13 +32,17 @@ public class GameController {
     private final Player player;
     private final InteractionArea interactionArea;
     private final GameMap gameMap;
+    private final GameService gameService;
     private final PlayerService playerService;
     private final com.orderup.service.KitchenService kitchenService;
+    private final OrderService orderService;
     private final GameTimer gameTimer;
     private final Runnable onGameFinished;
+    private final List<Double> plateRespawnTimers = new ArrayList<>();
 
     private GameState state = GameState.READY;
     private boolean interacting;
+    private int score;
 
     /**
      * 按默认关卡创建一局新游戏。
@@ -48,9 +62,10 @@ public class GameController {
     public GameController(int level, Runnable onGameFinished) {
         this.onGameFinished = onGameFinished;
 
-        GameService gameService = new GameServiceImpl();
+        gameService = new GameServiceImpl();
         playerService = new PlayerServiceImpl();
         kitchenService = new KitchenServiceImpl();
+        orderService = new OrderServiceImpl(level);
 
         player = new Player(GameConfig.PLAYER_START_X, GameConfig.PLAYER_START_Y);
         interactionArea = new InteractionArea();
@@ -65,6 +80,7 @@ public class GameController {
     public void startGame() {
         state = GameState.RUNNING;
         gameTimer.start(GameConfig.GAME_SECONDS);
+        ensureActiveOrders();
     }
 
     /**
@@ -92,6 +108,9 @@ public class GameController {
                 interacting,
                 deltaSeconds
         );
+        score += orderService.updateOrders(deltaSeconds);
+        ensureActiveOrders();
+        updatePlateRespawn(deltaSeconds);
         updateInteractableTiles();
         gameTimer.update(deltaSeconds);
     }
@@ -153,7 +172,50 @@ public class GameController {
         if (state != GameState.RUNNING) {
             return InteractionResult.failed("游戏未运行");
         }
+        Tile tile = kitchenService.findTile(interactionArea, gameMap);
+        if (tile != null && tile.getType() == TileType.ORDER_COUNTER) {
+            return submitHeldPlate();
+        }
         return kitchenService.interact(player, interactionArea, gameMap);
+    }
+
+    private InteractionResult submitHeldPlate() {
+        if (!(player.getHeldItem() instanceof Plate plate)) {
+            return InteractionResult.failed("请手持盘子到出餐口提交");
+        }
+
+        OrderResult result = orderService.submitPlate(plate);
+        player.releaseHeldItem();
+        gameMap.removeItem(plate);
+        plateRespawnTimers.add(GameConfig.PLATE_RESPAWN_SECONDS);
+
+        score += result.scoreDelta();
+        if (result.success()) {
+            ensureActiveOrders();
+            return InteractionResult.ok(result.message() + "，得分 +" + result.scoreDelta());
+        }
+        return InteractionResult.failed(
+                result.message() + "，扣分 " + Math.abs(result.scoreDelta())
+        );
+    }
+
+    private void ensureActiveOrders() {
+        while (orderService.getActiveOrders().size() < GameConfig.ACTIVE_ORDER_COUNT) {
+            orderService.createRandomOrder();
+        }
+    }
+
+    private void updatePlateRespawn(double deltaSeconds) {
+        ListIterator<Double> iterator = plateRespawnTimers.listIterator();
+        while (iterator.hasNext()) {
+            double remainingSeconds = iterator.next() - deltaSeconds;
+            if (remainingSeconds <= 0) {
+                gameService.addEmptyPlate(gameMap);
+                iterator.remove();
+            } else {
+                iterator.set(remainingSeconds);
+            }
+        }
     }
 
     /**
@@ -210,6 +272,16 @@ public class GameController {
     /** @return 本局倒计时剩余的整秒数 */
     public int getRemainingSeconds() {
         return gameTimer.getRemainingSeconds();
+    }
+
+    /** @return 当前所有未完成的活动订单 */
+    public List<Order> getActiveOrders() {
+        return orderService.getActiveOrders();
+    }
+
+    /** @return 本局已经获得的分数 */
+    public int getScore() {
+        return score;
     }
 
     /** @return 当前游戏状态 */

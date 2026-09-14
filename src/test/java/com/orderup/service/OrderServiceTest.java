@@ -11,8 +11,18 @@ import com.orderup.service.Impl.OrderServiceImpl;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class OrderServiceTest {
+    @Test
+    void firstLevelOnlyCreatesOrdersThatCanBeCompletedWithoutKelp() {
+        OrderServiceImpl service = new OrderServiceImpl(1);
+
+        Order order = service.createRandomOrder();
+
+        assertEquals(DishType.SASHIMI, order.getRecipe().getDishType());
+    }
+
     @Test
     void submitsAPlateMatchingTheActiveOrder() {
         OrderServiceImpl service = new OrderServiceImpl();
@@ -24,6 +34,31 @@ class OrderServiceTest {
         assertTrue(result.success());
         assertTrue(result.scoreDelta() > 0);
         assertTrue(plate.isEmpty());
+    }
+
+    @Test
+    void returnsNegativeScoreForWrongSubmission() {
+        OrderServiceImpl service = new OrderServiceImpl(1);
+        service.createRandomOrder();
+        Plate plate = new Plate();
+        plate.addIngredient(ingredient(IngredientType.RICE, IngredientStatus.COOKED));
+
+        OrderResult result = service.submitPlate(plate);
+
+        assertTrue(result.scoreDelta() < 0);
+        assertEquals(-10, result.scoreDelta());
+    }
+
+    @Test
+    void returnsNegativeScoreForEveryExpiredOrder() {
+        OrderServiceImpl service = new OrderServiceImpl(1);
+        service.createRandomOrder();
+        service.createRandomOrder();
+
+        int scoreDelta = service.updateOrders(30);
+
+        assertEquals(-40, scoreDelta);
+        assertTrue(service.getActiveOrders().isEmpty());
     }
 
     private Plate plateFor(DishType dishType) {
