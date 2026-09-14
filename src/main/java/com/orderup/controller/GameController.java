@@ -21,6 +21,10 @@ import com.orderup.service.OrderService;
 import com.orderup.service.PlayerService;
 import com.orderup.util.GameTimer;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+
 /**
  * 编排一局游戏，不包含 JavaFX 显示代码。
  */
@@ -34,10 +38,10 @@ public class GameController {
     private final OrderService orderService;
     private final GameTimer gameTimer;
     private final Runnable onGameFinished;
+    private final List<Double> plateRespawnTimers = new ArrayList<>();
 
     private GameState state = GameState.READY;
     private boolean interacting;
-    private double plateRespawnSeconds = -1;
     private int score;
 
     /**
@@ -76,7 +80,7 @@ public class GameController {
     public void startGame() {
         state = GameState.RUNNING;
         gameTimer.start(GameConfig.GAME_SECONDS);
-        ensureActiveOrder();
+        ensureActiveOrders();
     }
 
     /**
@@ -105,7 +109,7 @@ public class GameController {
                 deltaSeconds
         );
         orderService.updateOrders(deltaSeconds);
-        ensureActiveOrder();
+        ensureActiveOrders();
         updatePlateRespawn(deltaSeconds);
         updateInteractableTiles();
         gameTimer.update(deltaSeconds);
@@ -183,30 +187,32 @@ public class GameController {
         OrderResult result = orderService.submitPlate(plate);
         player.releaseHeldItem();
         gameMap.removeItem(plate);
-        plateRespawnSeconds = GameConfig.PLATE_RESPAWN_SECONDS;
+        plateRespawnTimers.add(GameConfig.PLATE_RESPAWN_SECONDS);
 
         if (result.success()) {
             score += result.scoreDelta();
-            ensureActiveOrder();
+            ensureActiveOrders();
             return InteractionResult.ok(result.message() + "，得分 +" + result.scoreDelta());
         }
         return InteractionResult.failed(result.message());
     }
 
-    private void ensureActiveOrder() {
-        if (orderService.getActiveOrders().isEmpty()) {
+    private void ensureActiveOrders() {
+        while (orderService.getActiveOrders().size() < GameConfig.ACTIVE_ORDER_COUNT) {
             orderService.createRandomOrder();
         }
     }
 
     private void updatePlateRespawn(double deltaSeconds) {
-        if (plateRespawnSeconds < 0) {
-            return;
-        }
-        plateRespawnSeconds -= deltaSeconds;
-        if (plateRespawnSeconds <= 0) {
-            gameService.addEmptyPlate(gameMap);
-            plateRespawnSeconds = -1;
+        ListIterator<Double> iterator = plateRespawnTimers.listIterator();
+        while (iterator.hasNext()) {
+            double remainingSeconds = iterator.next() - deltaSeconds;
+            if (remainingSeconds <= 0) {
+                gameService.addEmptyPlate(gameMap);
+                iterator.remove();
+            } else {
+                iterator.set(remainingSeconds);
+            }
         }
     }
 
@@ -266,11 +272,9 @@ public class GameController {
         return gameTimer.getRemainingSeconds();
     }
 
-    /** @return 当前显示的活动订单 */
-    public Order getCurrentOrder() {
-        return orderService.getActiveOrders().isEmpty()
-                ? null
-                : orderService.getActiveOrders().get(0);
+    /** @return 当前所有未完成的活动订单 */
+    public List<Order> getActiveOrders() {
+        return orderService.getActiveOrders();
     }
 
     /** @return 本局已经获得的分数 */

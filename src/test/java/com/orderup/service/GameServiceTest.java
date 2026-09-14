@@ -11,6 +11,8 @@ import com.orderup.model.TileType;
 import com.orderup.service.Impl.GameServiceImpl;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -46,16 +48,28 @@ class GameServiceTest {
                 TileType.ORDER_COUNTER,
                 map.getTile(GameConfig.ORDER_COUNTER_ROW, GameConfig.ORDER_COUNTER_COLUMN).getType()
         );
-        assertEquals(
-                TileType.PLATE_RETURN,
-                map.getTile(GameConfig.PLATE_RETURN_ROW, GameConfig.PLATE_RETURN_COLUMN).getType()
-        );
-        Plate plate = assertInstanceOf(Plate.class, map.getItems().get(0));
-        assertEquals(
-                GameConfig.PLATE_RETURN_COLUMN * GameConfig.TILE_SIZE
-                        + (GameConfig.TILE_SIZE - plate.getWidth()) / 2.0,
-                plate.getX()
-        );
+        for (int slot = 0; slot < GameConfig.PLATE_COUNT; slot++) {
+            assertEquals(
+                    TileType.PLATE_RETURN,
+                    map.getTile(
+                            GameConfig.PLATE_RETURN_ROW,
+                            GameConfig.PLATE_RETURN_START_COLUMN + slot
+                    ).getType()
+            );
+        }
+        List<Plate> plates = map.getItems().stream()
+                .filter(Plate.class::isInstance)
+                .map(Plate.class::cast)
+                .toList();
+        assertEquals(GameConfig.PLATE_COUNT, plates.size());
+        for (int slot = 0; slot < GameConfig.PLATE_COUNT; slot++) {
+            Plate plate = plates.get(slot);
+            assertEquals(
+                    (GameConfig.PLATE_RETURN_START_COLUMN + slot) * GameConfig.TILE_SIZE
+                            + (GameConfig.TILE_SIZE - plate.getWidth()) / 2.0,
+                    plate.getX()
+            );
+        }
     }
 
     @Test

@@ -28,6 +28,16 @@ public class KitchenServiceImpl implements com.orderup.service.KitchenService {
         if (tile instanceof ProcessingStation station) {
             return interactWithStation(player, station, map);
         }
+        if (player.getHeldItem() instanceof Ingredient ingredient && !(tile instanceof Table)) {
+            Plate plate = findPlate(area, map);
+            if (plate != null) {
+                InteractionResult result = addIngredientToPlate(plate, ingredient, map);
+                if (result.success()) {
+                    player.releaseHeldItem();
+                }
+                return result;
+            }
+        }
         if (player.getHeldItem() instanceof Plate plate && !(tile instanceof Table)) {
             if (tile instanceof IngredientSource source) {
                 Ingredient ingredient = new Ingredient(
@@ -271,6 +281,21 @@ public class KitchenServiceImpl implements com.orderup.service.KitchenService {
                     ingredient.getHeight()
             )) {
                 return ingredient;
+            }
+        }
+        return null;
+    }
+
+    private Plate findPlate(InteractionArea area, GameMap map) {
+        for (GameItem item : map.getItems()) {
+            if (item instanceof Plate plate
+                    && area.intersects(
+                    plate.getX(),
+                    plate.getY(),
+                    plate.getWidth(),
+                    plate.getHeight()
+            )) {
+                return plate;
             }
         }
         return null;

@@ -145,6 +145,30 @@ class KitchenServiceTest {
     }
 
     @Test
+    void addsHeldIngredientToPlateAtThePlateReturn() {
+        GameMap map = new GameServiceImpl().createMap();
+        Player player = new Player(570, 580);
+        player.press(Direction.DOWN);
+        player.clearInput();
+        InteractionArea area = new InteractionArea();
+        area.updateFrom(player);
+        KitchenService kitchen = new KitchenServiceImpl();
+        Plate plate = map.getItems().stream()
+                .filter(Plate.class::isInstance)
+                .map(Plate.class::cast)
+                .findFirst()
+                .orElseThrow();
+        Ingredient fish = map.addItem(new Ingredient(IngredientType.FISH, 0, 0));
+        fish.setStatus(IngredientStatus.CUT);
+        player.pickUp(fish);
+
+        assertTrue(kitchen.interact(player, area, map).success());
+        assertFalse(player.hasHeldItem());
+        assertEquals(fish, plate.getContents().get(0));
+        assertFalse(map.getItems().contains(fish));
+    }
+
+    @Test
     void addsRawKelpFromSourceToHeldPlate() {
         GameMap map = new GameServiceImpl().createMap(2);
         Player player = new Player(250, 80);

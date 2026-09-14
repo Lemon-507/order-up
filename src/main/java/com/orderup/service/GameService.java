@@ -54,7 +54,9 @@ public interface GameService {
                     createFacility(facility)
             );
         }
-        addEmptyPlate(map);
+        for (int count = 0; count < GameConfig.PLATE_COUNT; count++) {
+            addEmptyPlate(map);
+        }
     }
 
     /**
@@ -80,15 +82,23 @@ public interface GameService {
         };
     }
 
-    /** 在固定盘子区生成一个空盘子。 */
+    /** 在固定盘子区的第一个空位生成一个空盘子。 */
     default Plate addEmptyPlate(GameMap map) {
-        Plate plate = new Plate();
-        double x = GameConfig.PLATE_RETURN_COLUMN * GameConfig.TILE_SIZE
-                + (GameConfig.TILE_SIZE - plate.getWidth()) / 2.0;
-        double y = GameConfig.PLATE_RETURN_ROW * GameConfig.TILE_SIZE
-                + (GameConfig.TILE_SIZE - plate.getHeight()) / 2.0;
-        plate.setX(x);
-        plate.setY(y);
-        return map.addItem(plate);
+        for (int slot = 0; slot < GameConfig.PLATE_COUNT; slot++) {
+            Plate plate = new Plate();
+            double x = (GameConfig.PLATE_RETURN_START_COLUMN + slot) * GameConfig.TILE_SIZE
+                    + (GameConfig.TILE_SIZE - plate.getWidth()) / 2.0;
+            double y = GameConfig.PLATE_RETURN_ROW * GameConfig.TILE_SIZE
+                    + (GameConfig.TILE_SIZE - plate.getHeight()) / 2.0;
+            boolean occupied = map.getItems().stream()
+                    .filter(Plate.class::isInstance)
+                    .anyMatch(item -> item.getX() == x && item.getY() == y);
+            if (!occupied) {
+                plate.setX(x);
+                plate.setY(y);
+                return map.addItem(plate);
+            }
+        }
+        throw new IllegalStateException("盘子区已没有空位");
     }
 }

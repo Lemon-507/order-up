@@ -28,10 +28,12 @@ public final class GameConfig {
     public static final double CHOPPING_SECONDS = 2.0;
     public static final double RICE_COOKING_SECONDS = 5.0;
     public static final double PLATE_RESPAWN_SECONDS = 3.0;
+    public static final int PLATE_COUNT = 3;
+    public static final int ACTIVE_ORDER_COUNT = 3;
     public static final int ORDER_COUNTER_ROW = 8;
     public static final int ORDER_COUNTER_COLUMN = 5;
     public static final int PLATE_RETURN_ROW = 8;
-    public static final int PLATE_RETURN_COLUMN = 7;
+    public static final int PLATE_RETURN_START_COLUMN = 7;
 
     private static final Recipe SASHIMI_RECIPE = new Recipe(
             DishType.SASHIMI,
@@ -65,7 +67,9 @@ public final class GameConfig {
             new FacilityConfig(3, 6, TileType.CHOPPING_BOARD),
             new FacilityConfig(4, 6, TileType.RICE_COOKER),
             new FacilityConfig(ORDER_COUNTER_ROW, ORDER_COUNTER_COLUMN, TileType.ORDER_COUNTER),
-            new FacilityConfig(PLATE_RETURN_ROW, PLATE_RETURN_COLUMN, TileType.PLATE_RETURN)
+            new FacilityConfig(PLATE_RETURN_ROW, PLATE_RETURN_START_COLUMN, TileType.PLATE_RETURN),
+            new FacilityConfig(PLATE_RETURN_ROW, PLATE_RETURN_START_COLUMN + 1, TileType.PLATE_RETURN),
+            new FacilityConfig(PLATE_RETURN_ROW, PLATE_RETURN_START_COLUMN + 2, TileType.PLATE_RETURN)
     );
 
     private GameConfig() {
