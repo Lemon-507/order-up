@@ -3,7 +3,9 @@ package com.orderup.model;
 public enum TileType {
     FLOOR(false),
     TABLE(true),
-    INGREDIENT_SOURCE(true);
+    INGREDIENT_SOURCE(true),
+    CHOPPING_BOARD(true),
+    RICE_COOKER(true);
 
     private final boolean blocking;
 

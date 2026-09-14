@@ -14,6 +14,21 @@ public interface KitchenService {
     InteractionResult interact(Player player, InteractionArea area, GameMap map);
 
     /**
+     * 推进加工设施：电饭煲自动计时，切菜板仅在玩家持续交互时计时。
+     *
+     * @param area 玩家面前的交互区域
+     * @param map 当前地图
+     * @param interacting 玩家是否正按住交互键
+     * @param deltaSeconds 本次逻辑更新推进的秒数
+     */
+    void updateProcessing(
+            InteractionArea area,
+            GameMap map,
+            boolean interacting,
+            double deltaSeconds
+    );
+
+    /**
      * 将玩家手持物品的位置同步到交互区域。
      *
      * @param player 可能持有物品的玩家

@@ -2,6 +2,7 @@ package com.orderup.view;
 
 import com.orderup.model.GameItem;
 import com.orderup.model.Ingredient;
+import com.orderup.model.IngredientType;
 import com.orderup.model.Plate;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
@@ -46,10 +47,20 @@ public class GameItemView {
         graphics.setTextAlign(TextAlignment.CENTER);
         graphics.setTextBaseline(VPos.CENTER);
         graphics.fillText(
-                IngredientPalette.label(ingredient.getType()),
+                ingredientLabel(ingredient),
                 x + width / 2,
                 y + height / 2
         );
+    }
+
+    private String ingredientLabel(Ingredient ingredient) {
+        return switch (ingredient.getStatus()) {
+            case RAW -> IngredientPalette.label(ingredient.getType());
+            case CUT -> "切" + IngredientPalette.label(ingredient.getType());
+            case COOKED -> ingredient.getType() == IngredientType.RICE
+                    ? "饭"
+                    : "熟" + IngredientPalette.label(ingredient.getType());
+        };
     }
 
     private void renderPlate(GraphicsContext graphics, Plate plate) {

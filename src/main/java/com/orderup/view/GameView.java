@@ -113,6 +113,7 @@ public class GameView {
             // 按住 E 时 JavaFX 会重复发送事件，这里限制为每次按下只交互一次。
             if (!interactKeyPressed) {
                 interactKeyPressed = true;
+                controller.setInteracting(true);
                 controller.interact();
             }
             event.consume();
@@ -135,6 +136,7 @@ public class GameView {
 
         if (event.getCode() == KeyCode.E) {
             interactKeyPressed = false;
+            controller.setInteracting(false);
             event.consume();
             return;
         }

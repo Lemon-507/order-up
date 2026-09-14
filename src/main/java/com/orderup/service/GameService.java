@@ -22,7 +22,7 @@ public interface GameService {
     GameMap createMap(int level);
 
     /**
-     * 在地图上放置边界桌面、中央桌面、食材源和初始盘子。
+     * 在地图上放置边界桌面、中央桌面、食材源、加工设施和初始盘子。
      *
      * @param map 要配置的空白地图
      * @param level 关卡编号
@@ -45,6 +45,17 @@ public interface GameService {
                     source.row(),
                     source.column(),
                     new IngredientSource(source.row(), source.column(), source.ingredientType())
+            );
+        }
+        for (GameConfig.FacilityConfig facility : GameConfig.getFacilities(level)) {
+            map.setTile(
+                    facility.row(),
+                    facility.column(),
+                    new ProcessingStation(
+                            facility.row(),
+                            facility.column(),
+                            facility.tileType()
+                    )
             );
         }
         map.addItem(new Plate(130, 130));
