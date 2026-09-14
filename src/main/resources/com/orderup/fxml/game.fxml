@@ -17,7 +17,12 @@
                 <Label styleClass="order-caption" text="ACTIVE ORDERS" />
                 <Label fx:id="scoreLabel" styleClass="score-label" text="得分 0" />
             </HBox>
-            <VBox fx:id="ordersBox" spacing="8.0" />
+            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" maxHeight="430.0"
+                        pannable="true" styleClass="order-scroll" vbarPolicy="AS_NEEDED">
+                <content>
+                    <VBox fx:id="ordersBox" spacing="8.0" />
+                </content>
+            </ScrollPane>
         </VBox>
         <Button onAction="#onPauseButtonClick" styleClass="pause-button" text="暂停"
                 AnchorPane.rightAnchor="35.0" AnchorPane.topAnchor="105.0" />

@@ -61,6 +61,17 @@ class OrderServiceTest {
         assertTrue(service.getActiveOrders().isEmpty());
     }
 
+    @Test
+    void allowsAnyNumberOfActiveOrders() {
+        OrderServiceImpl service = new OrderServiceImpl(1);
+
+        for (int count = 0; count < 100; count++) {
+            service.createRandomOrder();
+        }
+
+        assertEquals(100, service.getActiveOrders().size());
+    }
+
     private Plate plateFor(DishType dishType) {
         Plate plate = new Plate();
         if (dishType == DishType.SASHIMI) {

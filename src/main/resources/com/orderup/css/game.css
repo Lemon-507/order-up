@@ -34,6 +34,19 @@
     -fx-alignment: center-left;
 }
 
+.order-scroll,
+.order-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.order-scroll {
+    -fx-padding: 0;
+}
+
+.order-scroll .scroll-bar:vertical {
+    -fx-pref-width: 8px;
+}
+
 .order-card {
     -fx-background-color: rgba(45, 63, 67, 0.72);
     -fx-background-radius: 6px;

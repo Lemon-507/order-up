@@ -42,6 +42,7 @@ public class GameController {
 
     private GameState state = GameState.READY;
     private boolean interacting;
+    private double orderSpawnSeconds = GameConfig.ORDER_SPAWN_INTERVAL_SECONDS;
     private int score;
 
     /**
@@ -80,7 +81,9 @@ public class GameController {
     public void startGame() {
         state = GameState.RUNNING;
         gameTimer.start(GameConfig.GAME_SECONDS);
-        ensureActiveOrders();
+        while (orderService.getActiveOrders().size() < GameConfig.INITIAL_ACTIVE_ORDER_COUNT) {
+            orderService.createRandomOrder();
+        }
     }
 
     /**
@@ -109,7 +112,8 @@ public class GameController {
                 deltaSeconds
         );
         score += orderService.updateOrders(deltaSeconds);
-        ensureActiveOrders();
+        ensureAtLeastOneActiveOrder();
+        updateOrderSpawning(deltaSeconds);
         updatePlateRespawn(deltaSeconds);
         updateInteractableTiles();
         gameTimer.update(deltaSeconds);
@@ -191,7 +195,7 @@ public class GameController {
 
         score += result.scoreDelta();
         if (result.success()) {
-            ensureActiveOrders();
+            ensureAtLeastOneActiveOrder();
             return InteractionResult.ok(result.message() + "，得分 +" + result.scoreDelta());
         }
         return InteractionResult.failed(
@@ -199,9 +203,17 @@ public class GameController {
         );
     }
 
-    private void ensureActiveOrders() {
-        while (orderService.getActiveOrders().size() < GameConfig.ACTIVE_ORDER_COUNT) {
+    private void ensureAtLeastOneActiveOrder() {
+        if (orderService.getActiveOrders().isEmpty()) {
             orderService.createRandomOrder();
+        }
+    }
+
+    private void updateOrderSpawning(double deltaSeconds) {
+        orderSpawnSeconds -= deltaSeconds;
+        if (orderSpawnSeconds <= 0) {
+            orderService.createRandomOrder();
+            orderSpawnSeconds = GameConfig.ORDER_SPAWN_INTERVAL_SECONDS;
         }
     }
 
