@@ -25,6 +25,11 @@ public final class GameConfig {
     public static final double MAX_ACCUMULATED_SECONDS = 0.25;
     public static final double PLAYER_START_X = 200;
     public static final double PLAYER_START_Y = 200;
+    public static final double PLAYER_SPEED = 220;
+    public static final double DASH_DISTANCE = 160;
+    public static final double DASH_DURATION_SECONDS = 0.15;
+    public static final double DASH_COOLDOWN_SECONDS = 0.8;
+    public static final double DASH_SPEED = DASH_DISTANCE / DASH_DURATION_SECONDS;
     public static final double CHOPPING_SECONDS = 2.0;
     public static final double RICE_COOKING_SECONDS = 5.0;
     public static final double PLATE_RESPAWN_SECONDS = 3.0;

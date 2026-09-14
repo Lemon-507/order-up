@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
  */
 public class PlayerView {
     public void render(GraphicsContext graphics, Player player) {
-        graphics.setFill(Color.RED);
+        graphics.setFill(player.isDashing() ? Color.web("#FFD54F") : Color.RED);
         graphics.fillRect(player.getX(), player.getY(), Player.WIDTH, Player.HEIGHT);
     }
 }

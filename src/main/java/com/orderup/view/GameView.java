@@ -61,6 +61,7 @@ public class GameView {
     private int lastRenderedSeconds = -1;
     private boolean interactKeyPressed;
     private boolean pauseKeyPressed;
+    private boolean dashKeyPressed;
     private boolean disposed;
     private final List<OrderCard> orderCards = new ArrayList<>();
     private List<String> renderedOrderIds = List.of();
@@ -103,6 +104,7 @@ public class GameView {
                 controller.clearInput();
                 interactKeyPressed = false;
                 pauseKeyPressed = false;
+                dashKeyPressed = false;
             }
         });
     }
@@ -118,7 +120,12 @@ public class GameView {
         }
 
         if (controller.getState() != GameState.RUNNING) {
-            if (event.getCode() == KeyCode.E || toDirection(event.getCode()) != null) {
+            if (event.getCode() == KeyCode.E
+                    || toDirection(event.getCode()) != null
+                    || isDashKey(event.getCode())) {
+                if (isDashKey(event.getCode())) {
+                    dashKeyPressed = true;
+                }
                 event.consume();
             }
             return;
@@ -130,6 +137,15 @@ public class GameView {
                 interactKeyPressed = true;
                 controller.setInteracting(true);
                 showInteractionResult(controller.interact());
+            }
+            event.consume();
+            return;
+        }
+
+        if (isDashKey(event.getCode())) {
+            if (!dashKeyPressed) {
+                dashKeyPressed = true;
+                controller.requestDash();
             }
             event.consume();
             return;
@@ -156,6 +172,12 @@ public class GameView {
             return;
         }
 
+        if (isDashKey(event.getCode())) {
+            dashKeyPressed = false;
+            event.consume();
+            return;
+        }
+
         Direction direction = toDirection(event.getCode());
         if (direction != null) {
             controller.release(direction);
@@ -171,6 +193,10 @@ public class GameView {
             case D -> Direction.RIGHT;
             default -> null;
         };
+    }
+
+    private boolean isDashKey(KeyCode keyCode) {
+        return keyCode == KeyCode.SHIFT;
     }
 
     /**
@@ -244,6 +270,7 @@ public class GameView {
     private void pauseGame() {
         controller.pauseGame();
         interactKeyPressed = false;
+        dashKeyPressed = false;
         setPauseOverlayVisible(true);
         Platform.runLater(continueButton::requestFocus);
     }
