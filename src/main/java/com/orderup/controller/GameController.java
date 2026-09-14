@@ -145,6 +145,16 @@ public class GameController {
     }
 
     /**
+     * 在游戏运行中请求一次点按冲刺。冷却中或已在冲刺时会被忽略。
+     */
+    public void requestDash() {
+        if (state != GameState.RUNNING) {
+            return;
+        }
+        player.tryStartDash();
+    }
+
+    /**
      * 清空当前所有移动输入，防止窗口失去焦点后玩家继续移动。
      */
     public void clearInput() {
