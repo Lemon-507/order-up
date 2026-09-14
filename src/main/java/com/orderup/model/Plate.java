@@ -18,7 +18,11 @@ public class Plate extends GameItem {
     }
 
     public boolean addIngredient(Ingredient ingredient) {
-        if (ingredient == null || ingredient.getStatus() == IngredientStatus.RAW) {
+        if (ingredient == null) {
+            return false;
+        }
+        if (ingredient.getStatus() == IngredientStatus.RAW
+                && ingredient.getType() != IngredientType.KELP) {
             return false;
         }
         return contents.add(ingredient);
@@ -30,7 +34,7 @@ public class Plate extends GameItem {
         }
         if (contents.size() == 2
                 && count(IngredientType.RICE, IngredientStatus.COOKED) == 1
-                && count(IngredientType.KELP, IngredientStatus.CUT) == 1) {
+                && count(IngredientType.KELP, IngredientStatus.RAW) == 1) {
             return DishType.ROLL;
         }
         return null;
