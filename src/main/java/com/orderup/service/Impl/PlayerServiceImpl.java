@@ -25,13 +25,17 @@ public class PlayerServiceImpl implements com.orderup.service.PlayerService {
 
         double dx = horizontalInput(player);
         double dy = verticalInput(player);
-        if (dx != 0 && dy != 0) {
+        if (dx == 0 && dy == 0 && player.isDashing()) {
+            dx = axisX(player.getFacingDirection());
+            dy = axisY(player.getFacingDirection());
+        } else if (dx != 0 && dy != 0) {
             double diagonalScale = 1.0 / Math.sqrt(2);
             dx *= diagonalScale;
             dy *= diagonalScale;
         }
 
-        double distance = player.getSpeed() * deltaSeconds;
+        double speed = player.isDashing() ? GameConfig.DASH_SPEED : player.getSpeed();
+        double distance = speed * deltaSeconds;
         double nextX = clamp(player.getX() + dx * distance, 0, worldWidth - Player.WIDTH);
         if (!collidesWithBlockingTile(nextX, player.getY(), map)) {
             player.setPosition(nextX, player.getY());
@@ -41,6 +45,29 @@ public class PlayerServiceImpl implements com.orderup.service.PlayerService {
         if (!collidesWithBlockingTile(player.getX(), nextY, map)) {
             player.setPosition(player.getX(), nextY);
         }
+        player.tickDash(deltaSeconds);
+    }
+
+    /**
+     * 将朝向转换为水平分量。
+     */
+    private double axisX(Direction direction) {
+        return switch (direction) {
+            case LEFT -> -1;
+            case RIGHT -> 1;
+            default -> 0;
+        };
+    }
+
+    /**
+     * 将朝向转换为垂直分量。
+     */
+    private double axisY(Direction direction) {
+        return switch (direction) {
+            case UP -> -1;
+            case DOWN -> 1;
+            default -> 0;
+        };
     }
 
     /**

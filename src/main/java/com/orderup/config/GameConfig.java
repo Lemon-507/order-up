@@ -6,6 +6,7 @@ import com.orderup.model.IngredientStatus;
 import com.orderup.model.IngredientType;
 import com.orderup.model.Recipe;
 import com.orderup.model.TileType;
+import com.orderup.model.TileVisual;
 
 import java.util.List;
 import java.util.Set;
@@ -20,23 +21,28 @@ public final class GameConfig {
     public static final int MAP_COLUMNS = 13;
     public static final int TILE_SIZE = 80;
     public static final int DEFAULT_LEVEL = 1;
-    public static final int GAME_SECONDS = 600;
+    public static final int GAME_SECONDS = 180;
     public static final double FIXED_STEP_SECONDS = 1.0 / 60.0;
     public static final double MAX_ACCUMULATED_SECONDS = 0.25;
     public static final double PLAYER_START_X = 200;
     public static final double PLAYER_START_Y = 200;
+    public static final double PLAYER_SPEED = 220;
+    public static final double DASH_DISTANCE = 160;
+    public static final double DASH_DURATION_SECONDS = 0.15;
+    public static final double DASH_COOLDOWN_SECONDS = 0.8;
+    public static final double DASH_SPEED = DASH_DISTANCE / DASH_DURATION_SECONDS;
     public static final double CHOPPING_SECONDS = 2.0;
     public static final double RICE_COOKING_SECONDS = 5.0;
     public static final double PLATE_RESPAWN_SECONDS = 3.0;
     public static final int PLATE_COUNT = 3;
     public static final int INITIAL_ACTIVE_ORDER_COUNT = 1;
     public static final double ORDER_SPAWN_INTERVAL_SECONDS = 10.0;
-    public static final int ORDER_COUNTER_ROW = 8;
-    public static final int ORDER_COUNTER_COLUMN = 5;
-    public static final int PLATE_RETURN_ROW = 8;
-    public static final int PLATE_RETURN_START_COLUMN = 7;
-    public static final int TRASH_CAN_ROW = 8;
-    public static final int TRASH_CAN_COLUMN = 11;
+    public static final int ORDER_COUNTER_ROW = 2;
+    public static final int ORDER_COUNTER_COLUMN = 12;
+    public static final int PLATE_RETURN_ROW = 0;
+    public static final int PLATE_RETURN_START_COLUMN = 6;
+    public static final int TRASH_CAN_ROW = 2;
+    public static final int TRASH_CAN_COLUMN = 0;
 
     private static final Recipe SASHIMI_RECIPE = new Recipe(
             DishType.SASHIMI,
@@ -56,24 +62,26 @@ public final class GameConfig {
     public static final List<Recipe> RECIPES = List.of(SASHIMI_RECIPE, ROLL_RECIPE);
 
     private static final List<IngredientSourceConfig> LEVEL_1_SOURCES = List.of(
-            new IngredientSourceConfig(0, 1, IngredientType.FISH),
-            new IngredientSourceConfig(0, 2, IngredientType.RICE)
+            new IngredientSourceConfig(4, 0, IngredientType.FISH),
+            new IngredientSourceConfig(4, 12, IngredientType.RICE),
+            new IngredientSourceConfig(7, 12, IngredientType.KELP)
     );
 
-    private static final List<IngredientSourceConfig> LEVEL_2_SOURCES = List.of(
-            new IngredientSourceConfig(0, 1, IngredientType.FISH),
-            new IngredientSourceConfig(0, 2, IngredientType.RICE),
-            new IngredientSourceConfig(0, 3, IngredientType.KELP)
-    );
+    private static final List<IngredientSourceConfig> LEVEL_2_SOURCES = LEVEL_1_SOURCES;
 
     private static final List<FacilityConfig> KITCHEN_FACILITIES = List.of(
-            new FacilityConfig(3, 6, TileType.CHOPPING_BOARD),
-            new FacilityConfig(4, 6, TileType.RICE_COOKER),
-            new FacilityConfig(ORDER_COUNTER_ROW, ORDER_COUNTER_COLUMN, TileType.ORDER_COUNTER),
-            new FacilityConfig(PLATE_RETURN_ROW, PLATE_RETURN_START_COLUMN, TileType.PLATE_RETURN),
-            new FacilityConfig(PLATE_RETURN_ROW, PLATE_RETURN_START_COLUMN + 1, TileType.PLATE_RETURN),
-            new FacilityConfig(PLATE_RETURN_ROW, PLATE_RETURN_START_COLUMN + 2, TileType.PLATE_RETURN),
-            new FacilityConfig(TRASH_CAN_ROW, TRASH_CAN_COLUMN, TileType.TRASH_CAN)
+            new FacilityConfig(0, 4, TileType.RICE_COOKER, TileVisual.RICE_COOKER),
+            new FacilityConfig(0, 5, TileType.RICE_COOKER, TileVisual.RICE_COOKER),
+            new FacilityConfig(0, 7, TileType.RICE_COOKER, TileVisual.RICE_COOKER),
+            new FacilityConfig(0, 8, TileType.RICE_COOKER, TileVisual.RICE_COOKER),
+            new FacilityConfig(8, 1, TileType.CHOPPING_BOARD, TileVisual.CUTTING_BOARD),
+            new FacilityConfig(8, 2, TileType.CHOPPING_BOARD, TileVisual.CUTTING_BOARD),
+            new FacilityConfig(8, 7, TileType.CHOPPING_BOARD, TileVisual.CUTTING_BOARD),
+            new FacilityConfig(8, 8, TileType.CHOPPING_BOARD, TileVisual.CUTTING_BOARD),
+            new FacilityConfig(2, 12, TileType.ORDER_COUNTER, TileVisual.SERVING_COUNTER),
+            new FacilityConfig(3, 12, TileType.ORDER_COUNTER, TileVisual.SERVING_COUNTER),
+            new FacilityConfig(PLATE_RETURN_ROW, PLATE_RETURN_START_COLUMN, TileType.PLATE_RETURN, TileVisual.BOWL_DISPENSER),
+            new FacilityConfig(TRASH_CAN_ROW, TRASH_CAN_COLUMN, TileType.TRASH_CAN, TileVisual.TRASH_BIN)
     );
 
     private GameConfig() {
@@ -126,6 +134,11 @@ public final class GameConfig {
     /**
      * 一个加工设施的静态地图配置。
      */
-    public record FacilityConfig(int row, int column, TileType tileType) {
+    public record FacilityConfig(
+            int row,
+            int column,
+            TileType tileType,
+            TileVisual tileVisual
+    ) {
     }
 }

@@ -9,16 +9,22 @@ public class Tile {
     private final int row;
     private final int column;
     private final TileType type;
+    private final TileVisual visual;
     private boolean interactable;
 
     public Tile(int row, int column) {
-        this(row, column, TileType.FLOOR);
+        this(row, column, TileType.FLOOR, TileVisual.floorAt(row, column));
     }
 
     public Tile(int row, int column, TileType type) {
+        this(row, column, type, TileVisual.defaultFor(type));
+    }
+
+    public Tile(int row, int column, TileType type, TileVisual visual) {
         this.row = row;
         this.column = column;
         this.type = type;
+        this.visual = visual;
     }
 
     public int getX() {
@@ -43,6 +49,10 @@ public class Tile {
 
     public TileType getType() {
         return type;
+    }
+
+    public TileVisual getVisual() {
+        return visual;
     }
 
     public boolean isInteractable() {

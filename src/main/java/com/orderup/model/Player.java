@@ -1,16 +1,16 @@
 package com.orderup.model;
 
-import java.util.EnumSet;
+import com.orderup.config.GameConfig;
+
 import java.util.HashSet;
 import java.util.Set;
-import java.util.List;
 
 /**
  * 玩家位置、朝向、输入状态和手持物品。
  */
 public class Player {
-    public static final double WIDTH = 60;
-    public static final double HEIGHT = 60;
+    public static final double WIDTH = 40;
+    public static final double HEIGHT = 80;
     private static final double DEFAULT_SPEED = 220;
 
     private final Set<Direction> pressedDirections = new HashSet<>();
@@ -19,9 +19,12 @@ public class Player {
     private double speed;
     private Direction facingDirection = Direction.DOWN;
     private GameItem heldItem;
+    private boolean dashing;
+    private double dashRemainingSeconds;
+    private double dashCooldownRemaining;
 
     public Player(double x, double y) {
-        this(x, y, DEFAULT_SPEED);
+        this(x, y, GameConfig.PLAYER_SPEED);
     }
 
     public Player(double x, double y, double speed) {
@@ -46,6 +49,45 @@ public class Player {
 
     public void clearInput() {
         pressedDirections.clear();
+        cancelDash();
+    }
+
+    /**
+     * 在冷却结束且当前未冲刺时启动一次点按冲刺。
+     *
+     * @return 成功进入冲刺时返回 {@code true}
+     */
+    public boolean tryStartDash() {
+        if (dashing || dashCooldownRemaining > 0) {
+            return false;
+        }
+        dashing = true;
+        dashRemainingSeconds = GameConfig.DASH_DURATION_SECONDS;
+        dashCooldownRemaining = GameConfig.DASH_COOLDOWN_SECONDS;
+        return true;
+    }
+
+    /**
+     * 推进冲刺剩余时间和冷却。冲刺时间耗尽后恢复普通移动。
+     *
+     * @param deltaSeconds 本次逻辑更新要推进的秒数
+     */
+    public void tickDash(double deltaSeconds) {
+        if (dashCooldownRemaining > 0) {
+            dashCooldownRemaining = Math.max(0, dashCooldownRemaining - deltaSeconds);
+        }
+        if (!dashing) {
+            return;
+        }
+        dashRemainingSeconds -= deltaSeconds;
+        if (dashRemainingSeconds <= 0) {
+            cancelDash();
+        }
+    }
+
+    private void cancelDash() {
+        dashing = false;
+        dashRemainingSeconds = 0;
     }
 
     public boolean isMoving(Direction direction) {
@@ -97,5 +139,9 @@ public class Player {
 
     public Direction getFacingDirection() {
         return facingDirection;
+    }
+
+    public boolean isDashing() {
+        return dashing;
     }
 }

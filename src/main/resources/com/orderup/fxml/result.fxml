@@ -3,15 +3,29 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.orderup.controller.ResultController"
-            prefHeight="720.0" prefWidth="1280.0">
-    <VBox alignment="CENTER" spacing="18.0"
-          AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0"
-          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
-        <Label text="游戏结束" style="-fx-font-size: 48px; -fx-font-weight: bold;" />
-        <Button text="重新开始" onAction="#onRestartButtonClick" prefWidth="180.0" />
-        <Button text="返回菜单" onAction="#onMenuButtonClick" prefWidth="180.0" />
-    </VBox>
-</AnchorPane>
+<StackPane prefHeight="720.0" prefWidth="1280.0" styleClass="result-root"
+           stylesheets="@../css/start.css"
+           xmlns="http://javafx.com/javafx/17.0.10" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.orderup.view.ResultView">
+    <AnchorPane maxHeight="720.0" maxWidth="1280.0" prefHeight="720.0" prefWidth="1280.0"
+                pickOnBounds="false" styleClass="design-surface, result-art">
+        <HBox alignment="CENTER" layoutX="438.0" layoutY="120.0" prefHeight="205.0"
+              prefWidth="402.0" spacing="6.0" styleClass="star-meter">
+            <Label fx:id="firstStarLabel" accessibleText="第一颗星" styleClass="result-star" text="★" />
+            <Label fx:id="secondStarLabel" accessibleText="第二颗星"
+                   styleClass="result-star, center-star" text="★" />
+            <Label fx:id="thirdStarLabel" accessibleText="第三颗星" styleClass="result-star" text="★" />
+        </HBox>
+        <VBox alignment="CENTER_LEFT" layoutX="742.0" layoutY="357.0" prefWidth="110.0" spacing="21.0">
+            <Label fx:id="completedOrdersLabel" styleClass="result-value" text="0" />
+            <Label fx:id="tipsLabel" styleClass="result-value" text="0" />
+            <Label fx:id="finalScoreLabel" styleClass="result-value, final-score-value" text="0" />
+        </VBox>
+        <Button accessibleText="返回主菜单" layoutX="426.0" layoutY="546.0"
+                onAction="#onMenuButtonClick" prefHeight="80.0" prefWidth="205.0"
+                styleClass="art-hotspot, gold-hotspot" text="返回主菜单" />
+        <Button accessibleText="重新开始" defaultButton="true" layoutX="653.0" layoutY="546.0"
+                onAction="#onRestartButtonClick" prefHeight="80.0" prefWidth="205.0"
+                styleClass="art-hotspot, gold-hotspot" text="重新开始" />
+    </AnchorPane>
+</StackPane>

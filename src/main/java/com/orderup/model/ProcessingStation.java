@@ -8,7 +8,7 @@ public class ProcessingStation extends Tile {
     private double progressSeconds;
 
     public ProcessingStation(int row, int column, TileType type) {
-        super(row, column, type);
+        super(row, column, type, TileVisual.defaultFor(type));
         if (type != TileType.CHOPPING_BOARD && type != TileType.RICE_COOKER) {
             throw new IllegalArgumentException("加工设施类型不正确：" + type);
         }

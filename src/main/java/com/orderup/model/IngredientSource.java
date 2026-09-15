@@ -9,8 +9,16 @@ public class IngredientSource extends Tile {
     private final IngredientType ingredientType;
 
     public IngredientSource(int row, int column, IngredientType ingredientType) {
-        super(row, column, TileType.INGREDIENT_SOURCE);
+        super(row, column, TileType.INGREDIENT_SOURCE, visualFor(ingredientType));
         this.ingredientType = Objects.requireNonNull(ingredientType);
+    }
+
+    private static TileVisual visualFor(IngredientType ingredientType) {
+        return switch (Objects.requireNonNull(ingredientType)) {
+            case FISH -> TileVisual.FISH_STORAGE;
+            case RICE -> TileVisual.RICE_STORAGE;
+            case KELP -> TileVisual.NORI_STORAGE;
+        };
     }
 
     public IngredientType getIngredientType() {

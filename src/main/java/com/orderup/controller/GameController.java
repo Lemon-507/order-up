@@ -3,6 +3,7 @@ package com.orderup.controller;
 import com.orderup.config.GameConfig;
 import com.orderup.model.Direction;
 import com.orderup.model.GameMap;
+import com.orderup.model.GameResult;
 import com.orderup.model.GameState;
 import com.orderup.model.InteractionArea;
 import com.orderup.model.InteractionResult;
@@ -17,8 +18,10 @@ import com.orderup.service.Impl.GameServiceImpl;
 import com.orderup.service.Impl.KitchenServiceImpl;
 import com.orderup.service.Impl.OrderServiceImpl;
 import com.orderup.service.Impl.PlayerServiceImpl;
+import com.orderup.service.Impl.ScoreServiceImpl;
 import com.orderup.service.OrderService;
 import com.orderup.service.PlayerService;
+import com.orderup.service.ScoreService;
 import com.orderup.util.GameTimer;
 
 import java.util.ArrayList;
@@ -36,6 +39,7 @@ public class GameController {
     private final PlayerService playerService;
     private final com.orderup.service.KitchenService kitchenService;
     private final OrderService orderService;
+    private final ScoreService scoreService;
     private final GameTimer gameTimer;
     private final Runnable onGameFinished;
     private final List<Double> plateRespawnTimers = new ArrayList<>();
@@ -44,6 +48,8 @@ public class GameController {
     private boolean interacting;
     private double orderSpawnSeconds = GameConfig.ORDER_SPAWN_INTERVAL_SECONDS;
     private int score;
+    private int completedOrderCount;
+    private int earnedTips;
 
     /**
      * 按默认关卡创建一局新游戏。
@@ -67,6 +73,7 @@ public class GameController {
         playerService = new PlayerServiceImpl();
         kitchenService = new KitchenServiceImpl();
         orderService = new OrderServiceImpl(level);
+        scoreService = new ScoreServiceImpl();
 
         player = new Player(GameConfig.PLAYER_START_X, GameConfig.PLAYER_START_Y);
         interactionArea = new InteractionArea();
@@ -138,6 +145,16 @@ public class GameController {
     }
 
     /**
+     * 在游戏运行中请求一次点按冲刺。冷却中或已在冲刺时会被忽略。
+     */
+    public void requestDash() {
+        if (state != GameState.RUNNING) {
+            return;
+        }
+        player.tryStartDash();
+    }
+
+    /**
      * 清空当前所有移动输入，防止窗口失去焦点后玩家继续移动。
      */
     public void clearInput() {
@@ -188,6 +205,11 @@ public class GameController {
             return InteractionResult.failed("请手持盘子到出餐口提交");
         }
 
+        Order matchedOrder = orderService.getActiveOrders().stream()
+                .filter(order -> plate.matches(order.getRecipe()))
+                .findFirst()
+                .orElse(null);
+        int tip = scoreService.calculateTip(matchedOrder);
         OrderResult result = orderService.submitPlate(plate);
         player.releaseHeldItem();
         gameMap.removeItem(plate);
@@ -195,6 +217,8 @@ public class GameController {
 
         score += result.scoreDelta();
         if (result.success()) {
+            completedOrderCount++;
+            earnedTips += tip;
             ensureAtLeastOneActiveOrder();
             return InteractionResult.ok(result.message() + "，得分 +" + result.scoreDelta());
         }
@@ -294,6 +318,21 @@ public class GameController {
     /** @return 本局已经获得的分数 */
     public int getScore() {
         return score;
+    }
+
+    /** @return 已完成的订单数量 */
+    public int getCompletedOrderCount() {
+        return completedOrderCount;
+    }
+
+    /** @return 完成订单时累计获得的小费 */
+    public int getEarnedTips() {
+        return earnedTips;
+    }
+
+    /** @return 当前一局可供结算页展示的快照 */
+    public GameResult getResult() {
+        return new GameResult(completedOrderCount, earnedTips, score);
     }
 
     /** @return 当前游戏状态 */
