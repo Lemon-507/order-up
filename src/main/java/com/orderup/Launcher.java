@@ -6,6 +6,7 @@ import com.orderup.controller.ResultController;
 import com.orderup.controller.StartController;
 import com.orderup.model.GameResult;
 import com.orderup.view.GameView;
+import com.orderup.view.ResultView;
 import com.orderup.view.SettingsView;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -139,8 +140,14 @@ public class Launcher extends Application {
                     this::setFullScreen,
                     this::showStartScene
             );
-        } else if (controller instanceof ResultController resultController) {
-            resultController.configure(lastGameResult, this::showGameScene, this::showStartScene);
+        } else if (controller instanceof ResultView resultView) {
+            ResultController resultController = new ResultController();
+            resultController.configure(
+                    resultView,
+                    lastGameResult,
+                    this::showGameScene,
+                    this::showStartScene
+            );
         } else if (controller instanceof GameView gameView) {
             gameView.configure(
                     selectedLevel,
