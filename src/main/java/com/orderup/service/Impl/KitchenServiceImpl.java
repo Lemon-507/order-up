@@ -145,6 +145,7 @@ public class KitchenServiceImpl implements com.orderup.service.KitchenService {
 
         station.place(ingredient);
         player.releaseHeldItem();
+
         return InteractionResult.ok(station.getType() == TileType.CHOPPING_BOARD
                 ? "生鱼已放上切菜板，请持续按住 E"
                 : "生米已放入电饭煲");
@@ -186,6 +187,7 @@ public class KitchenServiceImpl implements com.orderup.service.KitchenService {
             station.advance(deltaSeconds);
             if (station.getProgressSeconds() >= GameConfig.RICE_COOKING_SECONDS) {
                 ingredient.setStatus(IngredientStatus.COOKED);
+                ingredient.setSight(true);
             }
             return;
         }

@@ -20,6 +20,9 @@ public class ProcessingStation extends Tile {
         }
         this.ingredient = ingredient;
         progressSeconds = 0;
+        if(ingredient.getType()==IngredientType.RICE){
+            ingredient.setSight(false);
+        }
         ingredient.setX(getX() + (getSize() - ingredient.getWidth()) / 2.0);
         ingredient.setY(getY() + (getSize() - ingredient.getHeight()) / 2.0);
         return true;

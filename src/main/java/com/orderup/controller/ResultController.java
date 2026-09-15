@@ -6,7 +6,7 @@ import com.orderup.view.ResultView;
 import java.util.Objects;
 
 public final class ResultController {
-    private static final int POINTS_PER_STAR = 1000;
+    private static final int POINTS_PER_STAR = 300;
     private static final int MAX_STAR_COUNT = 3;
 
     private final ResultView resultView;

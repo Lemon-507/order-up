@@ -6,6 +6,7 @@ package com.orderup.model;
 public class Ingredient extends GameItem {
     private final IngredientType type;
     private IngredientStatus status = IngredientStatus.RAW;
+    private boolean isSight=true;
 
     public Ingredient(IngredientType type, double x, double y) {
         super(x, y);
@@ -28,5 +29,13 @@ public class Ingredient extends GameItem {
 
     public void setStatus(IngredientStatus status) {
         this.status = status;
+    }
+
+    public boolean isSight() {
+        return isSight;
+    }
+
+    public void setSight(boolean sight) {
+        isSight = sight;
     }
 }
