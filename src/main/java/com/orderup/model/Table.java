@@ -10,6 +10,10 @@ public class Table extends Tile {
         super(row, column, TileType.TABLE);
     }
 
+    public Table(int row, int column, TileVisual visual) {
+        super(row, column, TileType.TABLE, visual);
+    }
+
     public boolean place(GameItem item) {
         if (item == null || this.item != null) {
             return false;

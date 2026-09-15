@@ -173,3 +173,214 @@
     -fx-font-size: 12px;
     -fx-padding: 10px 0 0 0;
 }
+
+/* UI design pack: fixed 1040px play field + 240px side HUD. */
+.hud-panel {
+    -fx-background-image: url("../images/ui/hud.png");
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 240px 720px;
+    -fx-border-color: #ffad19 transparent #ffad19 #ffad19;
+    -fx-border-width: 3px 0 3px 3px;
+}
+
+.hud-panel .time-label {
+    -fx-padding: 0;
+    -fx-background-color: linear-gradient(to bottom, #783613, #4f210f);
+    -fx-background-radius: 4px;
+    -fx-border-color: #ffb51f;
+    -fx-border-width: 3px;
+    -fx-border-radius: 4px;
+    -fx-text-fill: linear-gradient(to bottom, #fffdf1, #ffd15a);
+    -fx-font-family: "Arial Black", "Microsoft YaHei";
+    -fx-font-size: 36px;
+    -fx-font-weight: 900;
+    -fx-effect: dropshadow(one-pass-box, #351308, 2, 1, 3, 4);
+}
+
+.hud-panel .pause-button {
+    -fx-pref-width: 112px;
+    -fx-pref-height: 42px;
+    -fx-background-color: linear-gradient(to bottom, #fff8dc, #edcf91);
+    -fx-background-radius: 5px;
+    -fx-border-color: #fff4c8 #6d2b13 #6d2b13 #fff4c8;
+    -fx-border-radius: 5px;
+    -fx-border-width: 2px 3px 4px 2px;
+    -fx-text-fill: #65230d;
+    -fx-font-family: "Microsoft YaHei";
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.hud-panel .pause-button:hover,
+.hud-panel .pause-button:focused {
+    -fx-background-color: linear-gradient(to bottom, #fffef3, #ffd76b);
+    -fx-border-color: #fff8d8 #8d3e10 #8d3e10 #fff8d8;
+    -fx-effect: dropshadow(gaussian, rgba(255, 183, 35, 0.8), 14, 0.35, 0, 0);
+}
+
+.hud-panel .pause-button:pressed {
+    -fx-translate-y: 2px;
+    -fx-border-width: 3px 2px 2px 3px;
+    -fx-effect: none;
+}
+
+.hud-panel .order-panel {
+    -fx-min-width: 216px;
+    -fx-max-width: 216px;
+    -fx-background-color: linear-gradient(to bottom, #783815, #5b250f);
+    -fx-background-radius: 4px;
+    -fx-border-color: #ffb21a;
+    -fx-border-radius: 4px;
+    -fx-border-width: 3px;
+    -fx-padding: 12px 10px 13px 10px;
+    -fx-effect: dropshadow(one-pass-box, rgba(30, 8, 2, 0.82), 2, 1, 3, 4);
+}
+
+.hud-panel .order-caption,
+.hud-panel .score-label {
+    -fx-text-fill: #ffd256;
+    -fx-font-family: "Microsoft YaHei";
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(one-pass-box, #391306, 1, 1, 2, 2);
+}
+
+.hud-panel .order-scroll,
+.hud-panel .order-scroll > .viewport,
+.hud-panel .order-scroll .corner {
+    -fx-background-color: transparent;
+}
+
+.hud-panel .order-scroll .scroll-bar:vertical {
+    -fx-pref-width: 7px;
+    -fx-background-color: transparent;
+}
+
+.hud-panel .order-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #e29b27;
+    -fx-background-radius: 2px;
+}
+
+.hud-panel .order-card {
+    -fx-background-color: linear-gradient(to bottom, #fffdf8, #f6ead2);
+    -fx-background-radius: 2px;
+    -fx-border-color: #f1cf87;
+    -fx-border-width: 3px;
+    -fx-border-radius: 2px;
+    -fx-padding: 8px 9px 10px 9px;
+    -fx-effect: dropshadow(one-pass-box, #321006, 2, 1, 3, 4);
+}
+
+.hud-panel .order-index {
+    -fx-text-fill: #c74d12;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.hud-panel .order-time {
+    -fx-text-fill: #d18a10;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.hud-panel .order-name {
+    -fx-text-fill: #5d1f0f;
+    -fx-font-family: "Microsoft YaHei";
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.hud-panel .order-recipe {
+    -fx-text-fill: #6b2a16;
+    -fx-font-family: "Microsoft YaHei";
+    -fx-font-size: 13px;
+}
+
+.hud-panel .interaction-message {
+    -fx-background-color: rgba(64, 22, 8, 0.94);
+    -fx-background-radius: 4px;
+    -fx-border-color: #f4ad29;
+    -fx-border-radius: 4px;
+    -fx-border-width: 2px;
+    -fx-padding: 8px 10px;
+    -fx-font-family: "Microsoft YaHei";
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.pause-overlay {
+    -fx-background-color: rgba(20, 8, 3, 0.68);
+}
+
+.pause-panel {
+    -fx-background-color: transparent;
+    -fx-background-image: url("../images/ui/pause-panel.png");
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: contain;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.75), 28, 0.35, 0, 10);
+}
+
+.pause-hotspot {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.pause-hotspot:hover,
+.pause-hotspot:focused {
+    -fx-background-color: rgba(255, 214, 107, 0.15);
+    -fx-background-radius: 4px;
+    -fx-border-color: #fff1b4;
+    -fx-border-radius: 4px;
+    -fx-border-width: 3px;
+    -fx-effect: dropshadow(gaussian, rgba(255, 176, 35, 0.92), 16, 0.38, 0, 0);
+}
+
+.pause-hotspot:pressed {
+    -fx-translate-y: 2px;
+    -fx-background-color: rgba(111, 51, 15, 0.18);
+    -fx-effect: none;
+}
+
+.music-toggle-button {
+    -fx-background-color: linear-gradient(to bottom, #ffd764, #e99a1a);
+    -fx-background-radius: 22px;
+    -fx-border-color: #fff2a8 #6b260d #6b260d #fff2a8;
+    -fx-border-radius: 22px;
+    -fx-border-width: 2px 3px 4px 2px;
+    -fx-text-fill: #5a210e;
+    -fx-font-family: "Segoe UI Symbol", "Arial";
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(one-pass-box, rgba(35, 8, 2, 0.9), 2, 1, 2, 3);
+}
+
+.music-toggle-button:hover,
+.music-toggle-button:focused {
+    -fx-background-color: linear-gradient(to bottom, #fff1a8, #ffbc32);
+    -fx-border-color: #fffbd7;
+    -fx-effect: dropshadow(gaussian, rgba(255, 184, 35, 0.9), 14, 0.35, 0, 0);
+}
+
+.music-toggle-button:pressed {
+    -fx-translate-y: 2px;
+    -fx-effect: none;
+}
+
+.music-toggle-button.muted {
+    -fx-background-color: linear-gradient(to bottom, #80634d, #4e392d);
+    -fx-border-color: #b69a82 #32170d #32170d #b69a82;
+    -fx-text-fill: #ead8c6;
+}

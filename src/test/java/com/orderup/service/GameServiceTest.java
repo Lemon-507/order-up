@@ -8,6 +8,7 @@ import com.orderup.model.Plate;
 import com.orderup.model.ProcessingStation;
 import com.orderup.model.Table;
 import com.orderup.model.TileType;
+import com.orderup.model.TileVisual;
 import com.orderup.service.Impl.GameServiceImpl;
 import org.junit.jupiter.api.Test;
 
@@ -25,38 +26,43 @@ class GameServiceTest {
         assertInstanceOf(Table.class, map.getTile(0, 0));
         IngredientSource fishSource = assertInstanceOf(
                 IngredientSource.class,
-                map.getTile(0, 1)
+                map.getTile(4, 0)
         );
         assertEquals(IngredientType.FISH, fishSource.getIngredientType());
         IngredientSource riceSource = assertInstanceOf(
                 IngredientSource.class,
-                map.getTile(0, 2)
+                map.getTile(4, 12)
         );
         assertEquals(IngredientType.RICE, riceSource.getIngredientType());
-        assertInstanceOf(Table.class, map.getTile(4, 5));
+        assertInstanceOf(Table.class, map.getTile(3, 4));
         ProcessingStation choppingBoard = assertInstanceOf(
                 ProcessingStation.class,
-                map.getTile(3, 6)
+                map.getTile(8, 1)
         );
         ProcessingStation riceCooker = assertInstanceOf(
                 ProcessingStation.class,
-                map.getTile(4, 6)
+                map.getTile(0, 4)
         );
         assertEquals(TileType.CHOPPING_BOARD, choppingBoard.getType());
         assertEquals(TileType.RICE_COOKER, riceCooker.getType());
+        assertEquals(TileVisual.FLOOR_LIGHT, map.getTile(1, 1).getVisual());
+        assertEquals(TileVisual.FLOOR_DARK, map.getTile(1, 2).getVisual());
+        assertEquals(TileVisual.ROUND_PLANTER, map.getTile(0, 2).getVisual());
+        assertEquals(TileVisual.SERVING_COUNTER, map.getTile(2, 12).getVisual());
+        assertEquals(TileType.ORDER_COUNTER, map.getTile(2, 12).getType());
+        assertEquals(TileType.ORDER_COUNTER, map.getTile(3, 12).getType());
+        assertInstanceOf(Table.class, map.getTile(8, 4));
+        assertInstanceOf(Table.class, map.getTile(8, 5));
+        assertEquals(TileVisual.CASHIER_COUNTER_LEFT, map.getTile(8, 4).getVisual());
+        assertEquals(TileVisual.CASHIER_COUNTER_RIGHT, map.getTile(8, 5).getVisual());
         assertEquals(
                 TileType.ORDER_COUNTER,
                 map.getTile(GameConfig.ORDER_COUNTER_ROW, GameConfig.ORDER_COUNTER_COLUMN).getType()
         );
-        for (int slot = 0; slot < GameConfig.PLATE_COUNT; slot++) {
-            assertEquals(
-                    TileType.PLATE_RETURN,
-                    map.getTile(
-                            GameConfig.PLATE_RETURN_ROW,
-                            GameConfig.PLATE_RETURN_START_COLUMN + slot
-                    ).getType()
-            );
-        }
+        assertEquals(
+                TileType.PLATE_RETURN,
+                map.getTile(GameConfig.PLATE_RETURN_ROW, GameConfig.PLATE_RETURN_START_COLUMN).getType()
+        );
         assertEquals(
                 TileType.TRASH_CAN,
                 map.getTile(GameConfig.TRASH_CAN_ROW, GameConfig.TRASH_CAN_COLUMN).getType()
@@ -69,9 +75,16 @@ class GameServiceTest {
         for (int slot = 0; slot < GameConfig.PLATE_COUNT; slot++) {
             Plate plate = plates.get(slot);
             assertEquals(
-                    (GameConfig.PLATE_RETURN_START_COLUMN + slot) * GameConfig.TILE_SIZE
-                            + (GameConfig.TILE_SIZE - plate.getWidth()) / 2.0,
+                    GameConfig.PLATE_RETURN_START_COLUMN * GameConfig.TILE_SIZE
+                            + (GameConfig.TILE_SIZE - plate.getWidth()) / 2.0
+                            + (slot - 1) * 5,
                     plate.getX()
+            );
+            assertEquals(
+                    GameConfig.PLATE_RETURN_ROW * GameConfig.TILE_SIZE
+                            + (GameConfig.TILE_SIZE - plate.getHeight()) / 2.0
+                            + slot * 2,
+                    plate.getY()
             );
         }
     }
@@ -82,7 +95,7 @@ class GameServiceTest {
 
         IngredientSource kelpSource = assertInstanceOf(
                 IngredientSource.class,
-                map.getTile(0, 3)
+                map.getTile(7, 12)
         );
         assertEquals(IngredientType.KELP, kelpSource.getIngredientType());
     }

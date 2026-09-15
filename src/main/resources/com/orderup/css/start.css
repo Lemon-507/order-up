@@ -222,3 +222,151 @@
 .footer-text {
     -fx-text-fill: #61726f;
 }
+
+/* Pixel-art screens supplied in the UI design pack. */
+.start-root,
+.settings-root,
+.level-select-root,
+.result-root {
+    -fx-font-family: "Microsoft YaHei", "Arial";
+    -fx-background-color: #101820;
+}
+
+.design-surface {
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 1280px 720px;
+}
+
+.start-art {
+    -fx-background-image: url("../images/ui/begin.png");
+}
+
+.settings-art {
+    -fx-background-image: url("../images/ui/game-settings.png");
+}
+
+.level-select-art {
+    -fx-background-image: url("../images/ui/level-select.png");
+}
+
+.result-art {
+    -fx-background-image: url("../images/ui/game-over.png");
+}
+
+/* The artwork contains the lettering; these nodes provide real hit targets. */
+.art-hotspot {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.art-hotspot:hover {
+    -fx-background-color: rgba(255, 226, 139, 0.14);
+    -fx-border-color: rgba(255, 230, 151, 0.88);
+    -fx-border-width: 3px;
+    -fx-effect: dropshadow(gaussian, rgba(255, 176, 35, 0.8), 18, 0.34, 0, 0);
+}
+
+.art-hotspot:focused {
+    -fx-border-color: #fff0b5;
+    -fx-border-width: 3px;
+    -fx-effect: dropshadow(gaussian, rgba(255, 176, 35, 0.9), 20, 0.38, 0, 0);
+}
+
+.art-hotspot:pressed {
+    -fx-translate-y: 2px;
+    -fx-background-color: rgba(85, 38, 12, 0.18);
+    -fx-effect: none;
+}
+
+.wood-hotspot,
+.gold-hotspot {
+    -fx-background-radius: 3px;
+    -fx-border-radius: 3px;
+}
+
+.dark-hotspot {
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+}
+
+.art-check-box {
+    -fx-cursor: hand;
+    -fx-padding: 2px;
+}
+
+.art-check-box .box {
+    -fx-pref-width: 32px;
+    -fx-pref-height: 32px;
+    -fx-background-color: #242521;
+    -fx-background-radius: 7px;
+    -fx-border-color: #929794;
+    -fx-border-radius: 7px;
+    -fx-border-width: 3px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.72), 6, 0.25, 0, 2);
+}
+
+.art-check-box:selected .box {
+    -fx-background-color: linear-gradient(to bottom, #ffe379, #f0b933);
+    -fx-border-color: #ffe89a;
+}
+
+.art-check-box .mark {
+    -fx-background-color: transparent;
+}
+
+.art-check-box:selected .mark {
+    -fx-background-color: #372313;
+    -fx-shape: "M 1 5 L 4 8 L 10 1 L 12 3 L 4 12 L 0 7 Z";
+    -fx-scale-x: 1.35;
+    -fx-scale-y: 1.35;
+}
+
+.art-check-box:hover .box,
+.art-check-box:focused .box {
+    -fx-border-color: #ffe38a;
+    -fx-effect: dropshadow(gaussian, rgba(255, 180, 45, 0.85), 14, 0.3, 0, 0);
+}
+
+.result-value {
+    -fx-min-width: 100px;
+    -fx-alignment: center-left;
+    -fx-text-fill: #fff5dd;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(one-pass-box, #35180f, 1, 1, 2, 2);
+}
+
+.final-score-value {
+    -fx-text-fill: #ffd05b;
+    -fx-font-size: 32px;
+}
+
+.negative-score {
+    -fx-text-fill: #ff796b;
+}
+
+.star-meter {
+    -fx-background-color: linear-gradient(to bottom, #3a1b14, #2b1512);
+    -fx-background-radius: 12px;
+}
+
+.result-star {
+    -fx-text-fill: #6d3a29;
+    -fx-font-family: "Segoe UI Symbol", "Arial";
+    -fx-font-size: 88px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(one-pass-box, #170806, 4, 1, 4, 7);
+}
+
+.result-star.center-star {
+    -fx-font-size: 108px;
+}
+
+.result-star.star-lit {
+    -fx-text-fill: linear-gradient(to bottom, #fff7a8, #ffd248 48%, #f18432 100%);
+    -fx-effect: dropshadow(gaussian, rgba(255, 157, 45, 0.9), 18, 0.38, 0, 3);
+}

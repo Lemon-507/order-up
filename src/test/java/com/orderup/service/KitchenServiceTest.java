@@ -25,8 +25,8 @@ class KitchenServiceTest {
     @Test
     void takesAndDropsAnIngredient() {
         GameMap map = new GameServiceImpl().createMap();
-        Player player = new Player(90, 80);
-        player.press(Direction.UP);
+        Player player = new Player(80, 330);
+        player.press(Direction.LEFT);
         player.clearInput();
         InteractionArea area = new InteractionArea();
         area.updateFrom(player);
@@ -44,8 +44,8 @@ class KitchenServiceTest {
     @Test
     void takesTheIngredientConfiguredForTheSource() {
         GameMap map = new GameServiceImpl().createMap(2);
-        Player player = new Player(170, 80);
-        player.press(Direction.UP);
+        Player player = new Player(900, 330);
+        player.press(Direction.RIGHT);
         player.clearInput();
         InteractionArea area = new InteractionArea();
         area.updateFrom(player);
@@ -59,7 +59,7 @@ class KitchenServiceTest {
     @Test
     void placesAndTakesAnItemFromATable() {
         GameMap map = new GameServiceImpl().createMap();
-        Player player = new Player(360, 250);
+        Player player = new Player(260, 250);
         player.press(Direction.RIGHT);
         player.clearInput();
         InteractionArea area = new InteractionArea();
@@ -70,7 +70,7 @@ class KitchenServiceTest {
 
         assertTrue(kitchen.interact(player, area, map).success());
         assertFalse(player.hasHeldItem());
-        assertFalse(((Table) map.getTile(3, 5)).isEmpty());
+        assertFalse(((Table) map.getTile(3, 4)).isEmpty());
 
         assertTrue(kitchen.interact(player, area, map).success());
         assertTrue(player.hasHeldItem());
@@ -79,13 +79,13 @@ class KitchenServiceTest {
     @Test
     void addsTableIngredientToHeldPlate() {
         GameMap map = new GameServiceImpl().createMap();
-        Player player = new Player(360, 250);
+        Player player = new Player(260, 250);
         player.press(Direction.RIGHT);
         player.clearInput();
         InteractionArea area = new InteractionArea();
         area.updateFrom(player);
         KitchenService kitchen = new KitchenServiceImpl();
-        Table table = (Table) map.getTile(3, 5);
+        Table table = (Table) map.getTile(3, 4);
         Ingredient fish = map.addItem(new Ingredient(IngredientType.FISH, 0, 0));
         fish.setStatus(IngredientStatus.CUT);
         table.place(fish);
@@ -106,11 +106,11 @@ class KitchenServiceTest {
     @Test
     void addsFinishedStationIngredientToHeldPlate() {
         GameMap map = new GameServiceImpl().createMap();
-        Player player = playerFacingLeftAt(250);
+        Player player = playerFacingDownAtColumn(7);
         InteractionArea area = new InteractionArea();
         area.updateFrom(player);
         KitchenService kitchen = new KitchenServiceImpl();
-        ProcessingStation choppingBoard = (ProcessingStation) map.getTile(3, 6);
+        ProcessingStation choppingBoard = (ProcessingStation) map.getTile(8, 7);
         Ingredient fish = map.addItem(new Ingredient(IngredientType.FISH, 0, 0));
         fish.setStatus(IngredientStatus.CUT);
         choppingBoard.place(fish);
@@ -151,8 +151,8 @@ class KitchenServiceTest {
     @Test
     void addsHeldIngredientToPlateAtThePlateReturn() {
         GameMap map = new GameServiceImpl().createMap();
-        Player player = new Player(570, 580);
-        player.press(Direction.DOWN);
+        Player player = new Player(490, 80);
+        player.press(Direction.UP);
         player.clearInput();
         InteractionArea area = new InteractionArea();
         area.updateFrom(player);
@@ -175,8 +175,8 @@ class KitchenServiceTest {
     @Test
     void addsRawKelpFromSourceToHeldPlate() {
         GameMap map = new GameServiceImpl().createMap(2);
-        Player player = new Player(250, 80);
-        player.press(Direction.UP);
+        Player player = new Player(900, 570);
+        player.press(Direction.RIGHT);
         player.clearInput();
         InteractionArea area = new InteractionArea();
         area.updateFrom(player);
@@ -194,8 +194,8 @@ class KitchenServiceTest {
     @Test
     void emptiesHeldPlateAtTheTrashCan() {
         GameMap map = new GameServiceImpl().createMap();
-        Player player = new Player(890, 580);
-        player.press(Direction.DOWN);
+        Player player = new Player(80, 170);
+        player.press(Direction.LEFT);
         player.clearInput();
         InteractionArea area = new InteractionArea();
         area.updateFrom(player);
@@ -221,7 +221,7 @@ class KitchenServiceTest {
     @Test
     void keepsPartialChoppingProgressWhenInteractionStops() {
         GameMap map = new GameServiceImpl().createMap();
-        Player player = playerFacingLeftAt(250);
+        Player player = playerFacingDownAtColumn(7);
         Ingredient fish = map.addItem(new Ingredient(IngredientType.FISH, 0, 0));
         player.pickUp(fish);
         InteractionArea area = new InteractionArea();
@@ -261,7 +261,9 @@ class KitchenServiceTest {
     @Test
     void cooksRawRiceAtTheRiceCooker() {
         GameMap map = new GameServiceImpl().createMap();
-        Player player = playerFacingLeftAt(330);
+        Player player = new Player(330, 80);
+        player.press(Direction.UP);
+        player.clearInput();
         Ingredient rice = map.addItem(new Ingredient(IngredientType.RICE, 0, 0));
         player.pickUp(rice);
         InteractionArea area = new InteractionArea();
@@ -287,9 +289,9 @@ class KitchenServiceTest {
         assertTrue(player.hasHeldItem());
     }
 
-    private Player playerFacingLeftAt(double y) {
-        Player player = new Player(560, y);
-        player.press(Direction.LEFT);
+    private Player playerFacingDownAtColumn(int column) {
+        Player player = new Player(column * GameConfig.TILE_SIZE + 10, 580);
+        player.press(Direction.DOWN);
         player.clearInput();
         return player;
     }
