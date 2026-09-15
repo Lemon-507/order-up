@@ -47,13 +47,15 @@ public class GameItemView {
                 + (ingredient.getWidth() - INGREDIENT_VISUAL_SIZE) / 2;
         double y = ingredient.getY()
                 + (ingredient.getHeight() - INGREDIENT_VISUAL_SIZE) / 2;
-        graphics.drawImage(
-                ingredientImage(ingredient),
-                x,
-                y,
-                INGREDIENT_VISUAL_SIZE,
-                INGREDIENT_VISUAL_SIZE
-        );
+        if(ingredient.isSight()){
+            graphics.drawImage(
+                    ingredientImage(ingredient),
+                    x,
+                    y,
+                    INGREDIENT_VISUAL_SIZE,
+                    INGREDIENT_VISUAL_SIZE
+            );
+        }
     }
 
     private Image ingredientImage(Ingredient ingredient) {
