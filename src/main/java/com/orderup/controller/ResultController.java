@@ -3,11 +3,18 @@ package com.orderup.controller;
 import com.orderup.model.GameResult;
 import com.orderup.view.ResultView;
 
-public class ResultController {
+import java.util.Objects;
 
-    private ResultView resultView;
+public final class ResultController {
+    private static final int POINTS_PER_STAR = 1000;
+    private static final int MAX_STAR_COUNT = 3;
 
-    private GameResult gameResult;
+    private final ResultView resultView;
+
+    public ResultController(ResultView resultView) {
+        this.resultView = Objects.requireNonNull(resultView, "resultView must not be null");
+    }
+
     /**
      * 注入结算页所需的页面操作。
      *
@@ -16,22 +23,20 @@ public class ResultController {
      * @param returnToMenu 返回开始菜单的回调
      */
     public void configure(
-            ResultView resultView,
             GameResult result,
             Runnable restartGame,
             Runnable returnToMenu
     ) {
-        this.resultView = resultView;
-        this.gameResult = result;
-        resultView.configure(result, restartGame, returnToMenu);
-        resultView.showStars(calculateStarCount(result.finalScore()));
+        Objects.requireNonNull(result, "result must not be null");
+        resultView.configure(
+                result,
+                calculateStarCount(result.finalScore()),
+                restartGame,
+                returnToMenu
+        );
     }
 
     static int calculateStarCount(int score) {
-        return Math.min(3, Math.max(0, score / 1000));
-    }
-
-    public GameResult getGameResult() {
-        return gameResult;
+        return Math.min(MAX_STAR_COUNT, Math.max(0, score / POINTS_PER_STAR));
     }
 }

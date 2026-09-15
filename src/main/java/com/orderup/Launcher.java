@@ -141,9 +141,7 @@ public class Launcher extends Application {
                     this::showStartScene
             );
         } else if (controller instanceof ResultView resultView) {
-            ResultController resultController = new ResultController();
-            resultController.configure(
-                    resultView,
+            new ResultController(resultView).configure(
                     lastGameResult,
                     this::showGameScene,
                     this::showStartScene
